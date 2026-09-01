@@ -164,8 +164,11 @@ This flow demonstrates technical capability, user value, and product completenes
 
 | Layer | Technology |
 |---|---|
-| Desktop | Tauri, React, TypeScript, Rust |
-| Activity capture | macOS Accessibility API, ScreenCaptureKit, Windows UI Automation |
+| Desktop runtime | Electron (Main Process, Preload, IPC) |
+| UI | React, TypeScript |
+| Shared contracts | TypeScript types, normalized event model, and platform adapter interfaces |
+| macOS capture | Swift Helper, Accessibility API, ScreenCaptureKit |
+| Windows capture | C#/.NET Helper with Windows UI Automation; optional Node-API native module for performance-sensitive features |
 | Backend | Python, FastAPI |
 | Database | PostgreSQL |
 | Storage | S3-compatible object storage |
@@ -174,15 +177,43 @@ This flow demonstrates technical capability, user value, and product completenes
 
 ```mermaid
 flowchart LR
-    D[Desktop client] -->|Authorized activity data| API[FastAPI backend]
+    UI[React + TypeScript UI] -->|Secure IPC| MAIN[Electron Main Process]
+    MAIN --> ADAPTER[Unified Capture Adapter]
+    ADAPTER -->|macOS| SWIFT[Swift Helper<br/>Accessibility + ScreenCaptureKit]
+    ADAPTER -->|Windows| WIN[C# Helper / Node Native Module<br/>Windows UI Automation]
+    SWIFT -->|Normalized events| MAIN
+    WIN -->|Normalized events| MAIN
+    MAIN --> BUFFER[Local session buffer]
+    BUFFER -->|Authorized activity data| API[FastAPI backend]
     API --> Q[Redis / Celery]
     Q --> AGG[Session aggregation]
     AGG --> AI[Multimodal AI analysis]
     AI --> R[Personal report]
-    R --> D
+    R --> UI
 ```
 
-Analysis runs after each completed session, preserving report quality while keeping the privacy boundary clear and controllable.
+### Desktop module boundaries
+
+- **React Renderer** owns the interface, session controls, and report presentation; it never accesses system APIs directly.
+- **Preload Bridge** exposes only an allowlisted set of IPC methods to the UI.
+- **Electron Main Process** manages the session lifecycle, local buffering, permission state, and native helper processes.
+- **Capture Adapter** hides platform differences behind one TypeScript interface.
+- **Swift / C# Helpers** perform permission-sensitive system capture and return normalized events only.
+- **Node Native Module** is an optional Windows implementation for features requiring lower latency or direct system API access.
+
+This separation allows the UI and system-capture layers to be developed and tested independently and makes additional platforms easier to support. Session data is aggregated locally and sent for AI analysis only after the user finishes the session, keeping the privacy boundary clear and controllable.
+
+See the [Architecture Documentation](docs/ARCHITECTURE.md) for complete module boundaries, trust rules, and extension guidelines.
+
+### Local development
+
+```bash
+npm install
+npm run build:native:macos
+npm run dev
+```
+
+On Windows, build the C# Helper with `npm run build:native:windows`. Run `npm run typecheck`, `npm test`, and `npm run build` for the complete project verification suite.
 
 ## Privacy by design
 

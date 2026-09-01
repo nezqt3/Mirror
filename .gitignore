@@ -1,0 +1,19 @@
+node_modules/
+dist/
+out/
+coverage/
+*.log
+.DS_Store
+
+# Native build output
+native/macos-capture/.build/
+native/windows-capture/bin/
+native/windows-capture/obj/
+
+# Local configuration
+.env
+.env.local
+!.env.example
+
+.codebase-memory
+.vscode/

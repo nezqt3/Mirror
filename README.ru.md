@@ -164,8 +164,11 @@ Mirror создан для **китайского инновационно-пр�
 
 | Уровень | Технологии |
 |---|---|
-| Desktop | Tauri, React, TypeScript, Rust |
-| Activity Capture | macOS Accessibility API, ScreenCaptureKit, Windows UI Automation |
+| Desktop Runtime | Electron: Main Process, Preload и IPC |
+| UI | React, TypeScript |
+| Общие контракты | TypeScript-типы, единая модель событий и интерфейсы платформенных адаптеров |
+| Сбор данных на macOS | Swift Helper, Accessibility API, ScreenCaptureKit |
+| Сбор данных на Windows | C#/.NET Helper и Windows UI Automation; опциональный Node-API native module для производительных функций |
 | Backend | Python, FastAPI |
 | Database | PostgreSQL |
 | Storage | S3-совместимое объектное хранилище |
@@ -174,15 +177,43 @@ Mirror создан для **китайского инновационно-пр�
 
 ```mermaid
 flowchart LR
-    D[Desktop-клиент] -->|Разрешённые данные| API[FastAPI backend]
+    UI[React + TypeScript UI] -->|Безопасный IPC| MAIN[Electron Main Process]
+    MAIN --> ADAPTER[Единый Capture Adapter]
+    ADAPTER -->|macOS| SWIFT[Swift Helper<br/>Accessibility + ScreenCaptureKit]
+    ADAPTER -->|Windows| WIN[C# Helper / Node Native Module<br/>Windows UI Automation]
+    SWIFT -->|Нормализованные события| MAIN
+    WIN -->|Нормализованные события| MAIN
+    MAIN --> BUFFER[Локальный буфер сессии]
+    BUFFER -->|Разрешённые данные| API[FastAPI backend]
     API --> Q[Redis / Celery]
     Q --> AGG[Агрегация сессии]
     AGG --> AI[Мультимодальный AI-анализ]
     AI --> R[Персональный отчёт]
-    R --> D
+    R --> UI
 ```
 
-Анализ выполняется после завершения сессии: это сохраняет качество отчёта и делает границы приватности ясными и управляемыми.
+### Границы desktop-модулей
+
+- **React Renderer** отвечает только за интерфейс, управление сессией и отображение отчётов — прямого доступа к системным API у него нет.
+- **Preload Bridge** предоставляет UI только разрешённый набор IPC-методов.
+- **Electron Main Process** управляет жизненным циклом сессии, локальным буфером, разрешениями и процессами native helper.
+- **Capture Adapter** скрывает различия macOS и Windows за единым TypeScript-интерфейсом.
+- **Swift / C# Helper** выполняют системный сбор, требующий нативных разрешений, и возвращают только нормализованные события.
+- **Node Native Module** предусмотрен как альтернативная Windows-реализация для функций, которым нужны минимальная задержка или прямой вызов системных API.
+
+Такое разделение позволяет независимо разрабатывать и тестировать UI и системные модули, а также проще добавлять новые платформы. Данные сессии сначала агрегируются локально и отправляются на AI-анализ только после её завершения, поэтому границы приватности остаются ясными и управляемыми.
+
+Полные границы модулей, модель доверия и правила расширения описаны в [архитектурной документации](docs/ARCHITECTURE.md).
+
+### Локальная разработка
+
+```bash
+npm install
+npm run build:native:macos
+npm run dev
+```
+
+На Windows C# Helper собирается командой `npm run build:native:windows`. Полная проверка проекта выполняется командами `npm run typecheck`, `npm test` и `npm run build`.
 
 ## Приватность по умолчанию
 

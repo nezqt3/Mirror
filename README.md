@@ -164,8 +164,11 @@ Mirror 是为 **Mirror 中国产品创新 / 产品**打造的产品项目，融�
 
 | 层级 | 技术方案 |
 |---|---|
-| Desktop | Tauri、React、TypeScript、Rust |
-| Activity Capture | macOS Accessibility API、ScreenCaptureKit、Windows UI Automation |
+| Desktop Runtime | Electron（Main Process、Preload、IPC） |
+| UI | React、TypeScript |
+| Shared Contracts | TypeScript 类型、统一事件模型与平台适配器接口 |
+| macOS Capture | Swift Helper、Accessibility API、ScreenCaptureKit |
+| Windows Capture | C#/.NET Helper、Windows UI Automation；高性能场景可使用 Node-API Native Module |
 | Backend | Python、FastAPI |
 | Database | PostgreSQL |
 | Storage | S3 兼容对象存储 |
@@ -174,15 +177,43 @@ Mirror 是为 **Mirror 中国产品创新 / 产品**打造的产品项目，融�
 
 ```mermaid
 flowchart LR
-    D[Desktop 客户端] -->|授权的活动数据| API[FastAPI 后端]
+    UI[React + TypeScript UI] -->|安全 IPC| MAIN[Electron Main Process]
+    MAIN --> ADAPTER[统一 Capture Adapter]
+    ADAPTER -->|macOS| SWIFT[Swift Helper<br/>Accessibility + ScreenCaptureKit]
+    ADAPTER -->|Windows| WIN[C# Helper / Node Native Module<br/>Windows UI Automation]
+    SWIFT -->|标准化事件| MAIN
+    WIN -->|标准化事件| MAIN
+    MAIN --> BUFFER[本地会话缓冲区]
+    BUFFER -->|授权的活动数据| API[FastAPI 后端]
     API --> Q[Redis / Celery]
     Q --> AGG[会话聚合]
     AGG --> AI[多模态 AI 分析]
     AI --> R[个人报告]
-    R --> D
+    R --> UI
 ```
 
-系统在会话结束后完成分析，既保证报告质量，也让隐私边界清晰可控。
+### Desktop 模块边界
+
+- **React Renderer** 只负责界面、会话控制和报告展示，不直接访问系统 API。
+- **Preload Bridge** 仅向 UI 暴露经过白名单控制的 IPC 方法。
+- **Electron Main Process** 管理会话生命周期、本地缓冲、权限状态和 Native Helper 进程。
+- **Capture Adapter** 将 macOS 与 Windows 的平台差异封装为统一 TypeScript 接口。
+- **Swift / C# Helper** 负责需要原生权限的系统采集，并只返回标准化事件。
+- **Node Native Module** 作为 Windows 可选实现，用于需要更低延迟或直接调用系统 API 的模块。
+
+这种分层让 UI 与系统采集能力可以独立开发和测试，也便于未来增加新的平台。会话数据先在本地聚合，只在用户结束会话后发送到后端进行 AI 分析，使隐私边界保持清晰可控。
+
+完整的模块边界、信任模型和扩展规则请参阅 [Architecture Documentation](docs/ARCHITECTURE.md)。
+
+### 本地开发
+
+```bash
+npm install
+npm run build:native:macos
+npm run dev
+```
+
+Windows 开发环境使用 `npm run build:native:windows` 构建 C# Helper。运行 `npm run typecheck`、`npm test` 和 `npm run build` 可完成项目检查。
 
 ## 隐私保护
 

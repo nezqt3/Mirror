@@ -2,7 +2,7 @@
 
 ### 不只是记录你工作了多久，更理解你如何完成目标。
 
-[![Mirror China](https://img.shields.io/badge/Mirror_AI-产品项目-E53935?style=for-the-badge)](#Mirror-china)
+[![Product](https://img.shields.io/badge/Product-目标驱动工作智能-E53935?style=for-the-badge)](#产品故事)
 [![AI](https://img.shields.io/badge/AI-个性化工作教练-6C5CE7?style=for-the-badge)](#核心能力)
 [![Desktop](https://img.shields.io/badge/Desktop-macOS_%7C_Windows-111827?style=for-the-badge)](#技术架构)
 [![Privacy](https://img.shields.io/badge/Privacy-设计先行-00A86B?style=for-the-badge)](#隐私保护)
@@ -34,7 +34,7 @@ Mirror 将碎片化的工作信号转化为可理解、可比较、可改善的�
 
 用户首先设定一个明确目标，例如：
 
-> **“在 90 分钟内完成 Mirror 路演演示文稿。”**
+> **“在 90 分钟内完成产品演示文稿。”**
 
 然后启动 Focus Session。Mirror 在授权范围内记录应用、窗口、网站、活跃时段和任务切换。会话结束后，AI 还原工作过程并生成个人报告。
 
@@ -142,23 +142,23 @@ Mirror Character 不仅提升参与感，也将复杂的个人 AI 模型转化�
 | 长期行为模型 | — | — | — | ✓ |
 | 基于质量的游戏化成长 | — | — | — | ✓ |
 
-## Mirror China
+## 产品故事
 
-Mirror 是为 **Mirror 中国产品创新 / 产品**打造的产品项目，融合多模态 AI、人本设计、行为分析、隐私工程和游戏化体验。
+现代知识工作充满了工具、通知和上下文切换，但人们仍然很难理解自己为何高效，或为何在投入大量时间后依然无法完成目标。Mirror 由此诞生：它不是另一个计时器，而是一面能够解释真实工作行为的数字镜子。
 
-项目验证的核心命题是：
+产品建立在一个清晰的核心理念之上：
 
 > 如果 AI 能还原一次目标导向型工作会话，它就能给出一条足够有价值的个性化建议，让下一次会话更高效。
 
-### 现场演示流程
+### 完整产品体验
 
-1. 设置与 Mirror 相关的工作目标。
+1. 设置一个清晰、可衡量的工作目标。
 2. 开启并完成一次 Focus Session。
 3. 查看 Goal Completion、Focus Score 和关键瓶颈。
 4. 获取 AI 个性化建议。
 5. 查看 Mirror Character 的成长结果。
 
-这一流程将技术能力、用户价值和产品完整性集中呈现在一个清晰、可衡量的闭环中。
+这一流程将目标、真实行为、AI 洞察和持续改善连接成一个完整闭环。Mirror 的价值不在于收集更多数据，而在于帮助用户理解一次工作经历，并让下一次做得更好。
 
 ## 技术架构
 
@@ -255,4 +255,4 @@ Mirror 希望成为值得信赖的个人工作智能层：像一面数字镜子�
 
 ---
 
-<p align="center"><strong>Built for Mirror China · Understand your work. Improve your next session.</strong></p>
+<p align="center"><strong>Understand your work · Improve your next session.</strong></p>

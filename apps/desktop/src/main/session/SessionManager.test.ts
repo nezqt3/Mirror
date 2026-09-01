@@ -12,7 +12,7 @@ describe("SessionManager", () => {
   it("starts, captures an event, and completes a session", async () => {
     const manager = new SessionManager(adapter);
     const running = await manager.start({
-      goal: "Prepare the Mirror demo",
+      goal: "Prepare the product demo",
       durationMinutes: 30,
       captureScreenshots: false
     });

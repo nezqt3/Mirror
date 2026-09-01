@@ -2,7 +2,7 @@
 
 ### Not just how long you work—how effectively you reach your goal.
 
-[![Mirror China](https://img.shields.io/badge/Mirror_AI-Competition_Project-E53935?style=for-the-badge)](#Mirror-china)
+[![Product](https://img.shields.io/badge/Product-Goal_Driven_Work_Intelligence-E53935?style=for-the-badge)](#product-story)
 [![AI](https://img.shields.io/badge/AI-Personal_Work_Coach-6C5CE7?style=for-the-badge)](#core-capabilities)
 [![Desktop](https://img.shields.io/badge/Desktop-macOS_%7C_Windows-111827?style=for-the-badge)](#technology)
 [![Privacy](https://img.shields.io/badge/Privacy-By_Design-00A86B?style=for-the-badge)](#privacy-by-design)
@@ -34,7 +34,7 @@ Mirror transforms fragmented work signals into personal insights that are unders
 
 The user begins with a clear goal, for example:
 
-> **“Finish the Mirror pitch deck in 90 minutes.”**
+> **“Finish the product presentation in 90 minutes.”**
 
 They then launch a Focus Session. Within the permissions they control, Mirror captures applications, windows, websites, activity periods, and task switches. When the session ends, AI reconstructs the workflow and generates a personal report.
 
@@ -142,23 +142,23 @@ Mirror Character increases engagement while turning a complex personal AI model 
 | Build a long-term behavior model | — | — | — | ✓ |
 | Reward quality-based progress | — | — | — | ✓ |
 
-## Mirror China
+## Product story
 
-Mirror was built for the **Mirror China innovation and entrepreneurship competition/product project**. It brings together multimodal AI, human-centered design, behavioral analytics, privacy engineering, and meaningful gamification.
+Modern knowledge work is filled with tools, notifications, and context switching, yet people still struggle to understand why they were productive—or why a goal remained unfinished after hours of effort. Mirror was created around that gap: not as another timer, but as a digital mirror that explains real working behavior.
 
-The project validates one focused hypothesis:
+The product is built around one clear belief:
 
 > If AI can reconstruct how a goal-oriented work session unfolded, it can deliver one personalized recommendation valuable enough to improve the next session.
 
-### Live demo flow
+### Complete product experience
 
-1. Set an Mirror-related work goal.
+1. Set a clear and measurable work goal.
 2. Start and complete a Focus Session.
 3. Review Goal Completion, Focus Score, and the main bottleneck.
 4. Receive personalized AI advice.
 5. See the resulting Mirror Character progress.
 
-This flow demonstrates technical capability, user value, and product completeness in one clear, measurable loop.
+This flow connects intention, real behavior, AI insight, and continuous improvement in one complete loop. Mirror is not valuable because it collects more data; it is valuable because it helps the user understand one working experience and make the next one better.
 
 ## Technology
 
@@ -255,4 +255,4 @@ This project is available under the [MIT License](LICENSE). Copyright © 2026 Al
 
 ---
 
-<p align="center"><strong>Built for Mirror China · Understand your work. Improve your next session.</strong></p>
+<p align="center"><strong>Understand your work · Improve your next session.</strong></p>

@@ -5,12 +5,12 @@ describe("shared contracts", () => {
   it("accepts a valid focus-session configuration", () => {
     expect(
       focusSessionConfigSchema.parse({
-        goal: "Finish the Mirror pitch deck",
+        goal: "Finish the product pitch deck",
         durationMinutes: 90,
         captureScreenshots: false
       })
     ).toEqual({
-      goal: "Finish the Mirror pitch deck",
+      goal: "Finish the product pitch deck",
       durationMinutes: 90,
       captureScreenshots: false
     });

@@ -11,7 +11,7 @@ const idleState: SessionState = {
 };
 
 export function App(): React.JSX.Element {
-  const [goal, setGoal] = useState("Finish the Mirror presentation");
+  const [goal, setGoal] = useState("Finish the product presentation");
   const [durationMinutes, setDurationMinutes] = useState(90);
   const [session, setSession] = useState<SessionState>(idleState);
   const [error, setError] = useState<string | null>(null);

@@ -17,7 +17,7 @@ function createWindow(): void {
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "default",
     backgroundColor: "#0b0d12",
     webPreferences: {
-      preload: join(__dirname, "../preload/index.mjs"),
+      preload: join(__dirname, "../preload/index.cjs"),
       contextIsolation: true,
       sandbox: true,
       nodeIntegration: false
@@ -25,6 +25,16 @@ function createWindow(): void {
   });
 
   mainWindow.once("ready-to-show", () => mainWindow?.show());
+  mainWindow.webContents.on("preload-error", (_event, preloadPath, error) => {
+    console.error(`Preload failed at ${preloadPath}`, error);
+  });
+  if (!app.isPackaged) {
+    mainWindow.webContents.once("did-finish-load", () => {
+      void mainWindow?.webContents
+        .executeJavaScript("Boolean(window.mirror)")
+        .then((available: boolean) => console.info(`Desktop bridge ready: ${available}`));
+    });
+  }
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https://")) void shell.openExternal(url);
     return { action: "deny" };

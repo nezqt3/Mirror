@@ -17,8 +17,16 @@ export function App(): React.JSX.Element {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    void window.mirror.getSessionState().then(setSession);
-    return window.mirror.onSessionStateChanged(setSession);
+    const api = window.mirror;
+    if (!api) {
+      setError("Desktop bridge is unavailable. Restart Mirror from the Electron app.");
+      return undefined;
+    }
+
+    void api.getSessionState().then(setSession).catch((caught: unknown) => {
+      setError(caught instanceof Error ? caught.message : "Unable to read session state");
+    });
+    return api.onSessionStateChanged(setSession);
   }, []);
 
   const isActive = ["starting", "running", "stopping"].includes(session.status);
@@ -30,10 +38,13 @@ export function App(): React.JSX.Element {
   const toggleSession = async (): Promise<void> => {
     setError(null);
     try {
+      const api = window.mirror;
+      if (!api) throw new Error("Desktop bridge is unavailable");
+
       if (session.status === "running") {
-        await window.mirror.stopSession();
+        await api.stopSession();
       } else {
-        await window.mirror.startSession({
+        await api.startSession({
           goal,
           durationMinutes,
           captureScreenshots: false
@@ -97,7 +108,9 @@ export function App(): React.JSX.Element {
             type="button"
             className={session.status === "running" ? "stop" : "start"}
             onClick={() => void toggleSession()}
-            disabled={session.status === "starting" || session.status === "stopping"}
+            disabled={
+              !window.mirror || session.status === "starting" || session.status === "stopping"
+            }
           >
             {session.status === "running" ? "Finish session" : "Start focus session"}
           </button>

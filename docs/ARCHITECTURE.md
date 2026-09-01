@@ -88,3 +88,35 @@ Platform-specific payloads are allowed only inside `event.payload`. Identity, se
 - application and website blacklist enforcement before persistence;
 - structured observability with privacy-safe diagnostics;
 - signed and packaged native helpers for production distribution.
+
+## Containerized desktop build
+
+The Electron workspace includes a multi-stage Dockerfile for reproducible CI verification and bundle generation. It intentionally builds artifacts rather than attempting to run the desktop GUI inside a container.
+
+```bash
+# Run type checking and tests inside the image build.
+docker build -f apps/desktop/Dockerfile --target verify .
+
+# Build the Electron bundle and produce the minimal artifact image.
+docker build -f apps/desktop/Dockerfile --target artifact -t mirror-desktop-build .
+
+# Copy compiled artifacts to the host without running Electron in Docker.
+container_id=$(docker create mirror-desktop-build)
+docker cp "$container_id:/opt/mirror" ./docker-artifacts
+docker rm "$container_id"
+```
+
+Native Swift and C# helpers are built and signed on their target operating systems. They are deliberately kept outside the Linux Electron bundle produced by this Dockerfile.
+
+The repository-level Compose configuration connects both useful Dockerfile targets:
+
+```bash
+# Build the minimal image containing compiled Electron artifacts.
+docker compose build desktop-build
+
+# Print the artifact files produced by the default service.
+docker compose run --rm desktop-build
+
+# Run the containerized typecheck and test build stage.
+docker compose --profile verify build desktop-verify
+```

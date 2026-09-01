@@ -215,6 +215,10 @@ npm run dev
 
 На Windows C# Helper собирается командой `npm run build:native:windows`. Полная проверка проекта выполняется командами `npm run typecheck`, `npm test` и `npm run build`.
 
+Docker используется для воспроизводимой CI-проверки и сборки Electron bundle: `docker build -f apps/desktop/Dockerfile --target verify .`. Swift и C# Helpers по-прежнему собираются и подписываются на соответствующих целевых операционных системах.
+
+Также доступен Docker Compose: `docker compose build desktop-build` собирает образ с артефактами, а `docker compose --profile verify build desktop-verify` выполняет контейнерную проверку проекта.
+
 ## Приватность по умолчанию
 
 Доверие — один из главных принципов Mirror.

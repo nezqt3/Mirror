@@ -215,6 +215,10 @@ npm run dev
 
 Windows 开发环境使用 `npm run build:native:windows` 构建 C# Helper。运行 `npm run typecheck`、`npm test` 和 `npm run build` 可完成项目检查。
 
+Docker 可用于可重复的 CI 检查和 Electron bundle 构建：`docker build -f apps/desktop/Dockerfile --target verify .`。Swift 与 C# Helper 仍需在对应的目标操作系统上构建和签名。
+
+也可以通过 Docker Compose 构建：`docker compose build desktop-build`。使用 `docker compose --profile verify build desktop-verify` 运行容器化检查。
+
 ## 隐私保护
 
 信任是 Mirror 的核心产品原则。

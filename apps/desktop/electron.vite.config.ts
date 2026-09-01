@@ -7,8 +7,16 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()]
   },
   preload: {
-    // Bundle shared validation contracts into the sandboxed preload script.
-    plugins: [externalizeDepsPlugin({ exclude: ["@mirror/contracts"] })]
+    // Sandboxed Electron preload scripts must be self-contained CommonJS.
+    plugins: [externalizeDepsPlugin({ exclude: ["@mirror/contracts"] })],
+    build: {
+      rollupOptions: {
+        output: {
+          format: "cjs",
+          entryFileNames: "[name].cjs"
+        }
+      }
+    }
   },
   renderer: {
     resolve: {

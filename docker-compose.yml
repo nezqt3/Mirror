@@ -1,0 +1,19 @@
+name: mirror
+
+services:
+  desktop-build:
+    image: mirror-desktop-build:local
+    build:
+      context: .
+      dockerfile: apps/desktop/Dockerfile
+      target: artifact
+    restart: "no"
+
+  desktop-verify:
+    image: mirror-desktop-verify:local
+    profiles: ["verify"]
+    build:
+      context: .
+      dockerfile: apps/desktop/Dockerfile
+      target: verify
+    restart: "no"

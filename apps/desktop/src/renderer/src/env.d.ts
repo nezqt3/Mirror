@@ -4,7 +4,7 @@ import type { MirrorDesktopApi } from "@mirror/contracts";
 
 declare global {
   interface Window {
-    mirror: MirrorDesktopApi;
+    mirror?: MirrorDesktopApi;
   }
 }
 

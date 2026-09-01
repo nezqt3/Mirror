@@ -215,6 +215,10 @@ npm run dev
 
 On Windows, build the C# Helper with `npm run build:native:windows`. Run `npm run typecheck`, `npm test`, and `npm run build` for the complete project verification suite.
 
+Docker provides reproducible CI verification and Electron bundle builds: `docker build -f apps/desktop/Dockerfile --target verify .`. Swift and C# Helpers are still built and signed on their target operating systems.
+
+Docker Compose is also available: run `docker compose build desktop-build` for the artifact image or `docker compose --profile verify build desktop-verify` for containerized verification.
+
 ## Privacy by design
 
 Trust is a core product principle.

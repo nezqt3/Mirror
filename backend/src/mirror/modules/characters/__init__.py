@@ -1,0 +1,1 @@
+"""Mirror Character module."""

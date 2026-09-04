@@ -40,6 +40,8 @@ class FocusSession(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     client_timezone: Mapped[str] = mapped_column(String(64), default="UTC")
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    analysis_error_code: Mapped[str | None] = mapped_column(String(80))
+    analysis_error_message: Mapped[str | None] = mapped_column(Text)
 
     user: Mapped[User] = relationship(back_populates="sessions")
     events: Mapped[list[ActivityEvent]] = relationship(

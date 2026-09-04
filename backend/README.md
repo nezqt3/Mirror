@@ -26,8 +26,37 @@ API будет доступен на `http://localhost:8000`, Swagger — на `
 5. `POST /api/v1/sessions/{id}/finish` → постановка анализа в очередь;
 6. `GET /api/v1/sessions/{id}/report` → получение результата.
 
-`SessionAnalyzer` сейчас является детерминированным baseline. Подключение конкретного
-multimodal LLM делается отдельным адаптером за этим интерфейсом, без изменения HTTP API.
+По умолчанию используется детерминированный baseline. Для production-анализа через Groq
+и `openai/gpt-oss-120b` укажите в `.env`:
+
+```dotenv
+AI_ENABLED=true
+AI_PROVIDER_URL=https://api.groq.com/openai/v1
+AI_API_KEY=gsk_...
+AI_MODEL=openai/gpt-oss-120b
+AI_REASONING_EFFORT=medium
+```
+
+Адаптер использует Strict Structured Outputs, скрытый reasoning и серверный расчёт времени,
+переключений и наград. Проверить реальный AI-вызов на синтетической сессии можно командой:
+
+```bash
+make test-ai
+```
+
+Команда выводит тот же компактный JSON, который возвращает endpoint отчёта. Обычные тесты
+не расходуют API-токены и используют mock transport:
+
+```bash
+make test
+```
+
+Полный тест `worker → PostgreSQL → report → character rewards` запускается отдельно и
+использует локальную тестовую запись, которую удаляет после проверки:
+
+```bash
+make test-integration
+```
 
 ## Архитектурные границы
 

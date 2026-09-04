@@ -1,4 +1,4 @@
-.PHONY: install dev test lint format migrate migration worker
+.PHONY: install dev test test-integration test-ai lint format migrate migration worker
 
 install:
 	python -m pip install -e '.[dev]'
@@ -8,6 +8,12 @@ dev:
 
 test:
 	pytest -q --cov=mirror
+
+test-integration:
+	RUN_DB_INTEGRATION=1 pytest -q tests/test_worker_integration.py
+
+test-ai:
+	python scripts/check_ai.py
 
 lint:
 	ruff check src tests
@@ -25,4 +31,3 @@ migration:
 
 worker:
 	celery -A mirror.worker.celery_app:celery_app worker --loglevel=INFO
-

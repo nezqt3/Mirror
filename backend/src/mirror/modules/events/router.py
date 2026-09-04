@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
+from sqlalchemy.dialects.postgresql import insert
 
 from mirror.api.dependencies import CurrentUser, DbSession
 from mirror.modules.events.model import ActivityEvent
@@ -27,8 +28,16 @@ async def ingest_events(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
     if session.status != SessionStatus.ACTIVE:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Session is not active")
-    db.add_all(
-        [ActivityEvent(session_id=session.id, **event.model_dump()) for event in payload.events]
+    rows = [
+        {"session_id": session.id, **event.model_dump()}
+        for event in payload.events
+    ]
+    result = await db.execute(
+        insert(ActivityEvent)
+        .values(rows)
+        .on_conflict_do_nothing(index_elements=["session_id", "client_event_id"])
+        .returning(ActivityEvent.id)
     )
     await db.commit()
-    return EventBatchAccepted(accepted=len(payload.events))
+    accepted = len(list(result.scalars()))
+    return EventBatchAccepted(accepted=accepted, duplicates=len(payload.events) - accepted)

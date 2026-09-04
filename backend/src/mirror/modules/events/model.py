@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, String
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -23,15 +23,24 @@ class EventType(StrEnum):
     IDLE_START = "idle_start"
     IDLE_END = "idle_end"
     SCREENSHOT = "screenshot"
+    HEARTBEAT = "heartbeat"
 
 
 class ActivityEvent(UUIDPrimaryKeyMixin, Base):
     __tablename__ = "activity_events"
-    __table_args__ = (Index("ix_events_session_occurred", "session_id", "occurred_at"),)
+    __table_args__ = (
+        Index("ix_events_session_occurred", "session_id", "occurred_at"),
+        UniqueConstraint(
+            "session_id",
+            "client_event_id",
+            name="uq_activity_events_session_client_event",
+        ),
+    )
 
     session_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("focus_sessions.id", ondelete="CASCADE")
     )
+    client_event_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
     event_type: Mapped[EventType] = mapped_column(
         Enum(EventType, name="activity_event_type", native_enum=False)
     )

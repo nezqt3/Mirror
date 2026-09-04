@@ -71,7 +71,41 @@ async def finish_session(
     if item.status != SessionStatus.ACTIVE:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Session is not active")
     item.ended_at = payload.ended_at or datetime.now(UTC)
+    if item.ended_at < item.started_at:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Session end time cannot be before start time",
+        )
     item.status = SessionStatus.PROCESSING
+    item.analysis_error_code = None
+    item.analysis_error_message = None
+    await db.commit()
+    await db.refresh(item)
+    analyze_session.delay(str(item.id))
+    return item
+
+
+@router.post(
+    "/{session_id}/analysis:retry",
+    response_model=SessionRead,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def retry_session_analysis(
+    session_id: UUID,
+    db: DbSession,
+    current_user: CurrentUser,
+) -> FocusSession:
+    item = await get_owned_session(db, session_id, current_user.id)
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+    if item.status != SessionStatus.FAILED:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Only failed analysis can be retried",
+        )
+    item.status = SessionStatus.PROCESSING
+    item.analysis_error_code = None
+    item.analysis_error_message = None
     await db.commit()
     await db.refresh(item)
     analyze_session.delay(str(item.id))

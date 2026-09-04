@@ -9,11 +9,12 @@ WORKDIR /app
 RUN addgroup --system mirror && adduser --system --ingroup mirror mirror
 COPY pyproject.toml ./
 COPY src ./src
+RUN --mount=type=cache,target=/root/.cache/pip pip install .
+
 COPY alembic.ini ./
 COPY alembic ./alembic
 COPY scripts ./scripts
 COPY examples ./examples
-RUN pip install --no-cache-dir .
 
 USER mirror
 EXPOSE 8000

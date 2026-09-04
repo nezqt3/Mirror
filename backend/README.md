@@ -7,21 +7,15 @@ Backend MVP для Focus Sessions: приём activity events, асинхрон�
 
 ```bash
 cp .env.example .env
-docker compose up -d postgres redis minio
-python -m venv .venv && source .venv/bin/activate
-make install
-make migrate
-make dev
+docker compose up -d --build
 ```
 
-API будет доступен на `http://localhost:8000`, Swagger — на `/docs`.
-В отдельном терминале запустите `make worker` для обработки завершённых сессий.
-
-Полностью контейнерный dev-запуск:
+Compose сам ждёт PostgreSQL, запускает одноразовую Alembic-миграцию и только после её успешного
+завершения стартует API и worker. API доступен на `http://localhost:8000`, Swagger — на `/docs`.
+Проверить состояние и логи:
 
 ```bash
-docker compose up -d --build
-docker compose run --rm api alembic upgrade head
+docker compose ps
 docker compose logs -f api worker
 ```
 
@@ -53,10 +47,15 @@ Production compose не публикует PostgreSQL, Redis и MinIO наруж
 cp .env.production.example .env.production
 # Замените все CHANGE_ME, задайте новый Groq API key и URL-encode пароль внутри DATABASE_URL
 
-docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml build
-docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml run --rm api alembic upgrade head
-docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml up -d
+docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml up -d --build
 docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml ps
+```
+
+Production compose также выполняет миграцию отдельным одноразовым контейнером до старта API и
+worker. Если миграция завершилась с ошибкой, приложение не стартует; диагностика:
+
+```bash
+docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml logs migrate
 ```
 
 После изменения production-кода соберите новый image и пересоздайте сервисы:
@@ -127,6 +126,16 @@ make test
 ```bash
 make test-integration
 ```
+
+Реальный HTTP integration-тест без моков регистрирует пользователя, получает JWT, передаёт его в
+защищённые endpoints, проверяет Redis ID, raw batch, worker и итоговый report:
+
+```bash
+make test-api-integration
+```
+
+Этот тест ожидает уже запущенный `docker compose`. При `AI_ENABLED=false` worker использует
+детерминированный baseline; реальный Groq проверяется отдельно через `scripts/check_ai.py`.
 
 ## Архитектурные границы
 

@@ -7,14 +7,24 @@ from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import httpx
+from redis import Redis
 
 
 def main() -> None:
+    report = run_pipeline()
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+
+
+def run_pipeline() -> dict[str, object]:
     base_url = os.getenv("MIRROR_API_URL", "http://localhost:8000/api/v1").rstrip("/")
+    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     email = f"mirror.pipeline.{uuid4().hex[:12]}@gmail.com"
     password = "MirrorPipeline-2026!"
 
-    with httpx.Client(base_url=base_url, timeout=20) as client:
+    with (
+        httpx.Client(base_url=base_url, timeout=20) as client,
+        Redis.from_url(redis_url, decode_responses=True) as redis_client,
+    ):
         user = _post(
             client,
             "/users",
@@ -32,6 +42,9 @@ def main() -> None:
                 "client_timezone": "Asia/Shanghai",
             },
         )
+        active_key = f"active_session:{user['id']}"
+        if redis_client.get(active_key) != session["id"]:
+            raise RuntimeError("session ID was not written to Redis")
 
         current = _get(client, "/sessions/current")
         if current["id"] != session["id"]:
@@ -48,9 +61,11 @@ def main() -> None:
             f"/sessions/{session['id']}/finish",
             {"ended_at": _iso(started_at + timedelta(minutes=60))},
         )
+        if redis_client.get(active_key) is not None:
+            raise RuntimeError("active-session Redis key was not cleared after finish")
         report = _wait_for_report(client, session["id"])
 
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return report
 
 
 def _raw_batch(session_id: str, user_id: str, start: datetime) -> dict[str, object]:

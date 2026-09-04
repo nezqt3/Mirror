@@ -1,0 +1,42 @@
+.settings-page {
+  width: min(880px, 100%);
+  margin: 0 auto;
+  padding-top: var(--ui-space-10);
+}
+
+.settings-page__header {
+  margin-bottom: var(--ui-space-8);
+}
+
+.settings-page__header .ui-eyebrow {
+  margin-bottom: var(--ui-space-2);
+}
+
+.settings-page__header .ui-text {
+  margin-top: var(--ui-space-3);
+}
+
+.settings-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-8);
+  padding: var(--ui-space-6);
+}
+
+.settings-section__copy {
+  display: grid;
+  max-width: 520px;
+  gap: var(--ui-space-2);
+}
+
+@media (max-width: 680px) {
+  .settings-section {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .language-switcher {
+    width: 100%;
+  }
+}

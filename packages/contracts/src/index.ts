@@ -60,6 +60,40 @@ export const completedSessionSchema = z.object({
 });
 export type CompletedSession = z.infer<typeof completedSessionSchema>;
 
+export const characterStatsSchema = z.object({
+  focus: z.number().int().min(0).max(100),
+  stamina: z.number().int().min(0).max(100),
+  execution: z.number().int().min(0).max(100),
+  discipline: z.number().int().min(0).max(100)
+});
+export type CharacterStats = z.infer<typeof characterStatsSchema>;
+
+export const characterSnapshotSchema = z.object({
+  level: z.number().int().positive(),
+  xp: z.object({
+    current: z.number().int().nonnegative(),
+    required: z.number().int().positive()
+  }),
+  stats: characterStatsSchema
+});
+export type CharacterSnapshot = z.infer<typeof characterSnapshotSchema>;
+
+export const mirrorCharacterSchema = characterSnapshotSchema.extend({
+  id: z.string().uuid(),
+  name: z.string().trim().min(1).max(40),
+  archetype: z.literal("base")
+});
+export type MirrorCharacter = z.infer<typeof mirrorCharacterSchema>;
+
+export const characterSessionProgressSchema = z.object({
+  sessionId: z.string().uuid(),
+  completedAt: z.string().datetime(),
+  xpGained: z.number().int().nonnegative(),
+  before: characterSnapshotSchema,
+  after: characterSnapshotSchema
+});
+export type CharacterSessionProgress = z.infer<typeof characterSessionProgressSchema>;
+
 export const helperCommandSchema = z.discriminatedUnion("command", [
   z.object({ command: z.literal("start"), sessionId: z.string().uuid() }),
   z.object({ command: z.literal("stop") }),

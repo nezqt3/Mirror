@@ -1,4 +1,4 @@
-export const supportedLanguages = ["en", "zh"] as const;
+export const supportedLanguages = ["en", "zh", "ru"] as const;
 
 export type LanguageCode = (typeof supportedLanguages)[number];
 
@@ -13,12 +13,13 @@ export const languageConfig: LanguageConfig = {
   defaultLanguage: "en",
   fallbackLanguage: "en",
   storageKey: "mirror.language",
-  supportedLanguages
+  supportedLanguages,
 };
 
 export const languageLabels: Record<LanguageCode, string> = {
   en: "English",
-  zh: "中文"
+  zh: "中文",
+  ru: "Русский",
 };
 
 export function isLanguageCode(value: string): value is LanguageCode {

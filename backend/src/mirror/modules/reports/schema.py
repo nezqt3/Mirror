@@ -10,6 +10,7 @@ class RewardsRead(BaseModel):
     focus: int = Field(ge=0)
     stamina: int = Field(ge=0)
     execution: int = Field(ge=0)
+    discipline: int = Field(default=0, ge=-5, le=1)
 
 
 class ReportRead(BaseModel):

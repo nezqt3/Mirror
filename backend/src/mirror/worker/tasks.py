@@ -1,7 +1,9 @@
 import asyncio
-from dataclasses import asdict
+from dataclasses import asdict, replace
+from datetime import date
 from typing import Any
 from uuid import UUID
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import structlog
 from sqlalchemy import select
@@ -11,10 +13,11 @@ from sqlalchemy.pool import NullPool
 from mirror.core.config import get_settings
 from mirror.db import models as _models  # noqa: F401
 from mirror.modules.characters.model import Character
+from mirror.modules.characters.service import apply_daily_discipline
 from mirror.modules.events.model import ActivityEvent
 from mirror.modules.reports.model import SessionReport
 from mirror.modules.sessions.model import FocusSession, SessionStatus
-from mirror.services.analyzer import AnalysisResult, Analyzer
+from mirror.services.analyzer import AnalysisResult, Analyzer, Rewards
 from mirror.services.analyzer_factory import create_analyzer
 from mirror.services.groq_analyzer import PermanentAnalyzerError
 from mirror.worker.celery_app import celery_app
@@ -79,6 +82,7 @@ async def _analyze_session(session_id: UUID) -> None:
                 await db.commit()
                 return
 
+            applied_rewards = await _apply_rewards(db, session, result)
             report = SessionReport(
                 session_id=session.id,
                 goal_completion=result.goal_completion,
@@ -89,11 +93,10 @@ async def _analyze_session(session_id: UUID) -> None:
                 distractions=result.distractions,
                 insights=result.insights,
                 next_session_advice=result.next_session_advice,
-                rewards=asdict(result.rewards),
+                rewards=asdict(applied_rewards),
                 model_name=result.model_name,
             )
             db.add(report)
-            await _apply_rewards(db, session.user_id, result)
             session.status = SessionStatus.COMPLETED
             session.analysis_error_code = None
             session.analysis_error_message = None
@@ -111,17 +114,33 @@ async def _report_exists(db: AsyncSession, session_id: UUID) -> bool:
     return report_id is not None
 
 
-async def _apply_rewards(db: AsyncSession, user_id: UUID, result: AnalysisResult) -> None:
-    character = await db.scalar(select(Character).where(Character.user_id == user_id))
+async def _apply_rewards(
+    db: AsyncSession, session: FocusSession, result: AnalysisResult
+) -> Rewards:
+    character = await db.scalar(select(Character).where(Character.user_id == session.user_id))
     if not character:
-        return
+        return result.rewards
     character.xp += result.rewards.xp
     character.focus += result.rewards.focus
     character.stamina += result.rewards.stamina
     character.execution += result.rewards.execution
+    discipline_delta = apply_daily_discipline(
+        character,
+        _local_session_date(session),
+    )
     while character.xp >= character.level * 500:
         character.xp -= character.level * 500
         character.level += 1
+    return replace(result.rewards, discipline=discipline_delta)
+
+
+def _local_session_date(session: FocusSession) -> date:
+    ended_at = session.ended_at or session.started_at
+    try:
+        timezone = ZoneInfo(session.client_timezone)
+    except ZoneInfoNotFoundError:
+        timezone = ZoneInfo("UTC")
+    return ended_at.astimezone(timezone).date()
 
 
 async def _mark_failed(session_id: UUID, error_code: str) -> None:

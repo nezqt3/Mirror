@@ -35,13 +35,20 @@ def test_completed_report_contract() -> None:
             "distractions": ["Telegram — 3 switches"],
             "insights": ["Research continued longer than necessary"],
             "next_session_advice": "Limit research to 20 minutes.",
-            "rewards": {"xp": 120, "focus": 2, "stamina": 1, "execution": 3},
+            "rewards": {
+                "xp": 120,
+                "focus": 2,
+                "stamina": 1,
+                "execution": 3,
+                "discipline": 1,
+            },
             "created_at": datetime.now(UTC),
         }
     )
 
     assert report.status == "completed"
     assert report.rewards.xp == 120
+    assert report.rewards.discipline == 1
 
 
 def test_processing_report_contract() -> None:

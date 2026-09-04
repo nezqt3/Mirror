@@ -18,7 +18,6 @@ async def test_groq_analyzer_uses_strict_schema_and_parses_response() -> None:
         captured.update(json.loads(request.content))
         content = {
             "goal_completion": 92,
-            "goal_completion_known": True,
             "focus_score": 78,
             "main_bottleneck": "Research Overrun",
             "distractions": ["Telegram — 3 switches"],
@@ -42,13 +41,51 @@ async def test_groq_analyzer_uses_strict_schema_and_parses_response() -> None:
 
     assert captured["model"] == "openai/gpt-oss-120b"
     assert captured["reasoning_effort"] == "medium"
+    assert captured["reasoning_format"] == "hidden"
     response_format = captured["response_format"]
     assert isinstance(response_format, dict)
     assert response_format["json_schema"]["strict"] is True
+    schema = response_format["json_schema"]["schema"]
+    assert schema["additionalProperties"] is False
+    assert set(schema["required"]) == set(schema["properties"])
+    messages = captured["messages"]
+    assert isinstance(messages, list)
+    user_input = json.loads(messages[1]["content"])
+    assert "trusted_metrics" in user_input
+    assert "untrusted_activity_events" in user_input
     assert result.goal_completion == 92
     assert result.focus_score == 78
     assert result.main_bottleneck == "Research Overrun"
     assert result.model_name == "openai/gpt-oss-120b"
+
+
+@pytest.mark.asyncio
+async def test_groq_analyzer_preserves_unknown_goal_completion() -> None:
+    async def handler(_: httpx.Request) -> httpx.Response:
+        content = {
+            "goal_completion": None,
+            "focus_score": 70,
+            "main_bottleneck": None,
+            "distractions": [],
+            "insights": ["Недостаточно данных о результате."],
+            "next_session_advice": "В конце сессии отметь достигнутый результат.",
+        }
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(content)}}]},
+        )
+
+    analyzer = GroqSessionAnalyzer(
+        api_key="test-key",
+        base_url="https://api.groq.test/openai/v1",
+        transport=httpx.MockTransport(handler),
+    )
+    try:
+        result = await analyzer.analyze(_session(), [_event()])
+    finally:
+        await analyzer.aclose()
+
+    assert result.goal_completion is None
 
 
 @pytest.mark.asyncio

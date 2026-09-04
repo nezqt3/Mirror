@@ -1,4 +1,4 @@
-.PHONY: install dev test test-integration test-ai lint format migrate migration worker
+.PHONY: install dev test test-integration test-ai test-pipeline lint format migrate migration worker
 
 install:
 	python -m pip install -e '.[dev]'
@@ -14,6 +14,9 @@ test-integration:
 
 test-ai:
 	python scripts/check_ai.py
+
+test-pipeline:
+	python scripts/check_pipeline.py
 
 lint:
 	ruff check src tests

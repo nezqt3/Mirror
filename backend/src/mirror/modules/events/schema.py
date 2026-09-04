@@ -1,21 +1,22 @@
-from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
+from pydantic import AliasChoices, AwareDatetime, BaseModel, ConfigDict, Field, field_validator
 
 from mirror.modules.events.model import EventType
 
 
 class EventCreate(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
 
     client_event_id: UUID | None = Field(
         default=None,
         validation_alias=AliasChoices("client_event_id", "id"),
     )
     event_type: EventType = Field(validation_alias=AliasChoices("event_type", "type"))
-    occurred_at: datetime = Field(validation_alias=AliasChoices("occurred_at", "timestamp"))
+    occurred_at: AwareDatetime = Field(
+        validation_alias=AliasChoices("occurred_at", "timestamp")
+    )
     source: str | None = Field(default=None, max_length=255)
     payload: dict[str, str | int | float | bool | None] = Field(default_factory=dict)
 
@@ -33,6 +34,8 @@ class EventCreate(BaseModel):
 
 
 class EventBatchCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     events: list[EventCreate] = Field(min_length=1, max_length=1000)
 
 

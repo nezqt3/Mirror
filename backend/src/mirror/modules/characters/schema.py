@@ -1,3 +1,4 @@
+from datetime import date
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -20,5 +21,8 @@ class CharacterRead(BaseModel):
     stamina: int
     execution: int
     discipline: int
+    current_streak: int
+    longest_streak: int
+    last_session_date: date | None
     adaptability: int
     energy: int

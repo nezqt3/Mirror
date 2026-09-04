@@ -17,11 +17,14 @@ if TYPE_CHECKING:
 
 
 class EventType(StrEnum):
+    SESSION_START = "session_start"
+    SESSION_END = "session_end"
     APP_FOCUS = "app_focus"
     WINDOW_FOCUS = "window_focus"
     URL_VISIT = "url_visit"
     IDLE_START = "idle_start"
     IDLE_END = "idle_end"
+    INPUT_ACTIVITY = "input_activity"
     SCREENSHOT = "screenshot"
     HEARTBEAT = "heartbeat"
 
@@ -42,7 +45,7 @@ class ActivityEvent(UUIDPrimaryKeyMixin, Base):
     )
     client_event_id: Mapped[UUID | None] = mapped_column(PGUUID(as_uuid=True))
     event_type: Mapped[EventType] = mapped_column(
-        Enum(EventType, name="activity_event_type", native_enum=False)
+        Enum(EventType, name="activity_event_type", native_enum=False, length=32)
     )
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     source: Mapped[str | None] = mapped_column(String(255))

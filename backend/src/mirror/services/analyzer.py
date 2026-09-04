@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Protocol
+from urllib.parse import urlsplit, urlunsplit
 
 from mirror.modules.events.model import ActivityEvent, EventType
 from mirror.modules.sessions.model import FocusSession
@@ -14,9 +15,11 @@ from mirror.modules.sessions.model import FocusSession
 @dataclass(frozen=True)
 class SessionMetrics:
     duration_minutes: int
+    active_minutes: int
     deep_work_minutes: int
     context_switches: int
     idle_minutes: int
+    idle_percent: int
     top_sources: list[dict[str, str | int]]
 
 
@@ -35,6 +38,7 @@ class Rewards:
     focus: int
     stamina: int
     execution: int
+    discipline: int
 
 
 @dataclass(frozen=True)
@@ -98,9 +102,11 @@ def build_analysis_input(
         actual_duration_minutes=duration,
         metrics=SessionMetrics(
             duration_minutes=duration,
+            active_minutes=max(0, duration - min(duration, idle_minutes)),
             deep_work_minutes=min(duration, deep_work),
             context_switches=context_switches,
             idle_minutes=min(duration, idle_minutes),
+            idle_percent=round(min(duration, idle_minutes) / duration * 100) if duration else 0,
             top_sources=[
                 {"source": source, "events": count} for source, count in sources.most_common(8)
             ],
@@ -121,6 +127,7 @@ def calculate_rewards(
         execution=(
             3 if completion >= 90 else 2 if completion >= 70 else 1 if completion >= 40 else 0
         ),
+        discipline=0,
     )
 
 
@@ -243,7 +250,7 @@ def _compact_payload(payload: dict[str, Any], max_chars: int) -> dict[str, Any]:
             break
         safe_key = str(key)[:80]
         if isinstance(value, (str, int, float, bool)) or value is None:
-            safe_value: Any = _truncate(value, min(remaining, 160))
+            safe_value: Any = _safe_payload_value(safe_key, value, min(remaining, 160))
             compact[safe_key] = safe_value
             remaining -= len(safe_key) + len(str(safe_value))
     return compact
@@ -253,3 +260,17 @@ def _truncate(value: Any, limit: int) -> Any:
     if not isinstance(value, str) or len(value) <= limit:
         return value
     return f"{value[: max(0, limit - 1)]}…"
+
+
+def _safe_payload_value(key: str, value: Any, limit: int) -> Any:
+    if not isinstance(value, str):
+        return value
+    if key.lower() == "url":
+        try:
+            parts = urlsplit(value)
+            value = urlunsplit((parts.scheme, parts.netloc, parts.path, "", ""))
+        except ValueError:
+            value = "invalid-url"
+    if key.lower() == "executablepath":
+        value = value.replace("\\", "/").rsplit("/", maxsplit=1)[-1]
+    return _truncate(value, limit)

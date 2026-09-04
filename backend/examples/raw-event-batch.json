@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "sessionId": "6d994566-e187-4944-b223-143566d5f74c",
+  "sentAt": "2026-09-04T14:00:00Z",
+  "events": [
+    {
+      "schemaVersion": 1,
+      "eventId": "9740bd4a-8174-4c62-89e8-45bda1dedc01",
+      "sessionId": "6d994566-e187-4944-b223-143566d5f74c",
+      "userId": "d4fb0729-6ee0-447f-af9c-ebed9c852370",
+      "producerId": "desktop-main-1",
+      "producerSequence": 1,
+      "timestamp": "2026-09-04T13:00:00Z",
+      "monotonicMs": 1000,
+      "platform": "macos",
+      "source": "electron",
+      "type": "app_focus",
+      "data": {
+        "processId": 42,
+        "appName": "Keynote",
+        "bundleId": "com.apple.Keynote"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "eventId": "9740bd4a-8174-4c62-89e8-45bda1dedc02",
+      "sessionId": "6d994566-e187-4944-b223-143566d5f74c",
+      "userId": "d4fb0729-6ee0-447f-af9c-ebed9c852370",
+      "producerId": "desktop-main-1",
+      "producerSequence": 2,
+      "timestamp": "2026-09-04T13:10:00Z",
+      "monotonicMs": 601000,
+      "platform": "macos",
+      "source": "electron",
+      "type": "browser_navigation",
+      "data": {
+        "browser": "Chrome",
+        "url": "https://www.google.com/search?q=productivity+market",
+        "domain": "google.com",
+        "title": "productivity market",
+        "incognito": false,
+        "transition": "typed"
+      }
+    }
+  ]
+}

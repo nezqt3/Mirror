@@ -22,9 +22,16 @@ API будет доступен на `http://localhost:8000`, Swagger — на `
 1. `POST /api/v1/users` → регистрация;
 2. `POST /api/v1/auth/login` → access/refresh tokens;
 3. `POST /api/v1/sessions` → старт Focus Session;
-4. `POST /api/v1/sessions/{id}/events:batch` → пакет событий клиента;
-5. `POST /api/v1/sessions/{id}/finish` → постановка анализа в очередь;
-6. `GET /api/v1/sessions/{id}/report` → получение результата.
+4. `GET /api/v1/sessions/current` → текущая сессия через Redis с DB fallback;
+5. `POST /api/v1/sessions/{id}/events:batch` → пакет событий клиента;
+6. `POST /api/v1/sessions/{id}/finish` → постановка анализа в очередь;
+7. `GET /api/v1/sessions/{id}/report` → получение результата.
+
+Production batch соответствует `packages/contracts/src/raw-activity.ts`: верхний объект содержит
+`schemaVersion`, `sessionId`, `sentAt` и `events`. Backend строго проверяет данные каждого
+события, совпадение session/user ID, запрещает лишние поля и отклоняет incognito-события.
+Готовый пример для Swagger находится в `examples/raw-event-batch.json`. Старый компактный
+формат `{ "events": [...] }` временно принимается для обратной совместимости.
 
 По умолчанию используется детерминированный baseline. Для production-анализа через Groq
 и `openai/gpt-oss-120b` укажите в `.env`:
@@ -42,6 +49,18 @@ AI_REASONING_EFFORT=medium
 
 ```bash
 make test-ai
+```
+
+Прогнать сразу три сценария качества модели:
+
+```bash
+python scripts/check_ai.py --all
+```
+
+Полный публичный pipeline `HTTP → PostgreSQL → Redis → worker → Groq → report`:
+
+```bash
+python scripts/check_pipeline.py
 ```
 
 Команда выводит тот же компактный JSON, который возвращает endpoint отчёта. Обычные тесты
@@ -70,3 +89,12 @@ make test-integration
 Raw screenshots не кладутся в PostgreSQL: БД хранит только object key и метаданные.
 Desktop-клиент загружает файл по presigned URL. Blacklist/incognito-фильтрация должна
 выполняться до отправки данных, а сервер повторно валидирует разрешённый event payload.
+
+Redis хранит только быстрый указатель `active_session:{user_id} → session_id` и Celery-задачи.
+Полные Focus Sessions, activity events и отчёты остаются в PostgreSQL. При cache miss endpoint
+`/sessions/current` восстанавливает указатель из БД.
+
+Discipline меняется максимум один раз за локальный календарный день завершённой Focus Session:
+первый день и каждый следующий день серии дают `+1`; пропуск сбрасывает streak и снимает по
+одному очку за пропущенный день, максимум `-5` за одно обновление. Простое открытие приложения
+не начисляет Discipline.

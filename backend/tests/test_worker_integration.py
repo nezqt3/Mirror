@@ -73,6 +73,9 @@ async def test_worker_persists_report_and_applies_rewards() -> None:
             assert report.rewards["xp"] >= 0
             assert session is not None and session.status == SessionStatus.COMPLETED
             assert character is not None and character.xp == report.rewards["xp"]
+            assert report.rewards["discipline"] == 1
+            assert character.current_streak == 1
+            assert character.longest_streak == 1
     finally:
         async with session_factory() as db:
             await db.execute(delete(User).where(User.id == user_id))

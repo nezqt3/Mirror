@@ -8,6 +8,11 @@ from mirror.api.dependencies import CurrentUser, DbSession
 from mirror.modules.sessions.model import FocusSession, SessionStatus
 from mirror.modules.sessions.schema import SessionCreate, SessionFinish, SessionRead
 from mirror.modules.sessions.service import get_owned_session
+from mirror.services.active_sessions import (
+    clear_active_session_id,
+    get_active_session_id,
+    set_active_session_id,
+)
 from mirror.worker.tasks import analyze_session
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
@@ -33,6 +38,11 @@ async def create_session(
     db.add(item)
     await db.commit()
     await db.refresh(item)
+    await set_active_session_id(
+        current_user.id,
+        item.id,
+        planned_duration_minutes=item.planned_duration_minutes,
+    )
     return item
 
 
@@ -51,6 +61,34 @@ async def list_sessions(
         .offset(offset)
     )
     return list(result)
+
+
+@router.get("/current", response_model=SessionRead)
+async def read_current_session(
+    db: DbSession,
+    current_user: CurrentUser,
+) -> FocusSession:
+    cached_id = await get_active_session_id(current_user.id)
+    if cached_id is not None:
+        cached = await get_owned_session(db, cached_id, current_user.id)
+        if cached is not None and cached.status == SessionStatus.ACTIVE:
+            return cached
+        await clear_active_session_id(current_user.id)
+
+    item = await db.scalar(
+        select(FocusSession).where(
+            FocusSession.user_id == current_user.id,
+            FocusSession.status == SessionStatus.ACTIVE,
+        )
+    )
+    if item is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No active session")
+    await set_active_session_id(
+        current_user.id,
+        item.id,
+        planned_duration_minutes=item.planned_duration_minutes,
+    )
+    return item
 
 
 @router.get("/{session_id}", response_model=SessionRead)
@@ -81,7 +119,8 @@ async def finish_session(
     item.analysis_error_message = None
     await db.commit()
     await db.refresh(item)
-    analyze_session.delay(str(item.id))
+    await clear_active_session_id(current_user.id)
+    await _enqueue_analysis(item, db)
     return item
 
 
@@ -108,5 +147,19 @@ async def retry_session_analysis(
     item.analysis_error_message = None
     await db.commit()
     await db.refresh(item)
-    analyze_session.delay(str(item.id))
+    await _enqueue_analysis(item, db)
     return item
+
+
+async def _enqueue_analysis(item: FocusSession, db: DbSession) -> None:
+    try:
+        analyze_session.delay(str(item.id))
+    except Exception as exc:
+        item.status = SessionStatus.FAILED
+        item.analysis_error_code = "ANALYSIS_QUEUE_UNAVAILABLE"
+        item.analysis_error_message = "Session analysis could not be queued"
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Analysis queue is temporarily unavailable; retry the analysis later",
+        ) from exc

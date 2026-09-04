@@ -3,7 +3,7 @@
 Backend MVP для Focus Sessions: приём activity events, асинхронный анализ завершённой
 сессии, отчёты и развитие Mirror Character.
 
-## Быстрый старт
+## Запуск для разработки
 
 ```bash
 cp .env.example .env
@@ -16,6 +16,57 @@ make dev
 
 API будет доступен на `http://localhost:8000`, Swagger — на `/docs`.
 В отдельном терминале запустите `make worker` для обработки завершённых сессий.
+
+Полностью контейнерный dev-запуск:
+
+```bash
+docker compose up -d --build
+docker compose run --rm api alembic upgrade head
+docker compose logs -f api worker
+```
+
+В dev-compose API использует hot reload: изменения внутри `src/` подхватываются автоматически.
+Worker видит тот же актуальный `src/`, но Celery нужно перезапустить:
+
+```bash
+docker compose restart worker
+```
+
+Изменения `.env` требуют пересоздания контейнеров:
+
+```bash
+docker compose up -d --force-recreate api worker
+```
+
+Изменения `pyproject.toml`, Dockerfile, миграций, `scripts/` или `examples/` требуют rebuild:
+
+```bash
+docker compose up -d --build --force-recreate api worker
+```
+
+## Запуск в production
+
+Production compose не публикует PostgreSQL, Redis и MinIO наружу, не использует bind mounts или
+`--reload`, включает restart policy и сохраняет Redis queue в отдельном volume.
+
+```bash
+cp .env.production.example .env.production
+# Замените все CHANGE_ME, задайте новый Groq API key и URL-encode пароль внутри DATABASE_URL
+
+docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml build
+docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml run --rm api alembic upgrade head
+docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml up -d
+docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml ps
+```
+
+После изменения production-кода соберите новый image и пересоздайте сервисы:
+
+```bash
+docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.yml up -d --build
+```
+
+На нескольких серверах следует публиковать image с неизменяемым `IMAGE_TAG` и запускать именно
+его, а не собирать исходники на каждом сервере.
 
 Основной MVP flow уже отражён в API:
 

@@ -30,6 +30,8 @@ services:
       redis:
         condition: service_healthy
     command: celery -A mirror.worker.celery_app:celery_app worker --loglevel=INFO
+    volumes:
+      - ./src:/app/src
 
   postgres:
     image: postgres:17-alpine

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -11,6 +12,7 @@ class SessionCreate(BaseModel):
     goal: str = Field(min_length=3, max_length=2000)
     planned_duration_minutes: int = Field(ge=5, le=480)
     client_timezone: str = Field(default="UTC", max_length=64)
+    analysis_locale: Literal["en", "zh-CN"] = "en"
 
     @field_validator("client_timezone")
     @classmethod
@@ -32,6 +34,7 @@ class SessionRead(BaseModel):
     id: UUID
     goal: str
     planned_duration_minutes: int
+    analysis_locale: Literal["en", "zh-CN"]
     status: SessionStatus
     client_timezone: str
     started_at: datetime

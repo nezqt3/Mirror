@@ -19,6 +19,10 @@ docker compose ps
 docker compose logs -f api worker
 ```
 
+При создании Focus Session frontend может передать `analysis_locale: "en"` или
+`analysis_locale: "zh-CN"`. Значение по умолчанию — `en`; оно фиксируется на сессии и задаёт язык
+всех текстовых значений AI-отчёта. JSON-поля при этом всегда остаются английскими.
+
 В dev-compose API использует hot reload: изменения внутри `src/` подхватываются автоматически.
 Worker видит тот же актуальный `src/`, но Celery нужно перезапустить:
 
@@ -99,6 +103,13 @@ AI_REASONING_EFFORT=medium
 
 ```bash
 make test-ai
+```
+
+Проверить реальный AI на конкретном языке:
+
+```bash
+python scripts/check_ai.py --scenario deep_work_success --locale en
+python scripts/check_ai.py --scenario deep_work_success --locale zh-CN
 ```
 
 Прогнать сразу три сценария качества модели:

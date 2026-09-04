@@ -5,6 +5,7 @@ from uuid import uuid4
 import httpx
 import pytest
 
+from mirror.db import models as _models  # noqa: F401
 from mirror.modules.events.model import ActivityEvent, EventType
 from mirror.modules.sessions.model import FocusSession
 from mirror.services.groq_analyzer import GroqSessionAnalyzer, RetryableAnalyzerError
@@ -50,7 +51,9 @@ async def test_groq_analyzer_uses_strict_schema_and_parses_response() -> None:
     assert set(schema["required"]) == set(schema["properties"])
     messages = captured["messages"]
     assert isinstance(messages, list)
+    assert "Write every human-readable string value in English" in messages[0]["content"]
     user_input = json.loads(messages[1]["content"])
+    assert user_input["session"]["analysis_locale"] == "en"
     assert "trusted_metrics" in user_input
     assert "untrusted_activity_events" in user_input
     assert result.goal_completion == 92
@@ -122,12 +125,13 @@ async def test_groq_analyzer_rejects_invalid_structured_response() -> None:
         await analyzer.aclose()
 
 
-def _session() -> FocusSession:
+def _session(analysis_locale: str = "en") -> FocusSession:
     started_at = datetime(2026, 9, 2, 10, 0, tzinfo=UTC)
     return FocusSession(
         user_id=uuid4(),
         goal="Finish presentation",
         planned_duration_minutes=60,
+        analysis_locale=analysis_locale,
         started_at=started_at,
         ended_at=started_at + timedelta(minutes=60),
     )

@@ -18,6 +18,7 @@ def main() -> None:
 def run_pipeline() -> dict[str, object]:
     base_url = os.getenv("MIRROR_API_URL", "http://localhost:8000/api/v1").rstrip("/")
     redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    analysis_locale = os.getenv("MIRROR_ANALYSIS_LOCALE", "en")
     email = f"mirror.pipeline.{uuid4().hex[:12]}@gmail.com"
     password = "MirrorPipeline-2026!"
 
@@ -40,8 +41,11 @@ def run_pipeline() -> dict[str, object]:
                 "goal": "Закончить презентацию и экспортировать финальную версию",
                 "planned_duration_minutes": 60,
                 "client_timezone": "Asia/Shanghai",
+                "analysis_locale": analysis_locale,
             },
         )
+        if session["analysis_locale"] != analysis_locale:
+            raise RuntimeError("session returned an unexpected analysis locale")
         active_key = f"active_session:{user['id']}"
         if redis_client.get(active_key) != session["id"]:
             raise RuntimeError("session ID was not written to Redis")

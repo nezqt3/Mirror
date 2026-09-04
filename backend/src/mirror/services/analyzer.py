@@ -26,6 +26,7 @@ class SessionMetrics:
 @dataclass(frozen=True)
 class AnalysisInput:
     goal: str
+    analysis_locale: str
     planned_duration_minutes: int
     actual_duration_minutes: int
     metrics: SessionMetrics
@@ -98,6 +99,7 @@ def build_analysis_input(
 
     return AnalysisInput(
         goal=session.goal,
+        analysis_locale=session.analysis_locale or "en",
         planned_duration_minutes=session.planned_duration_minutes,
         actual_duration_minutes=duration,
         metrics=SessionMetrics(
@@ -149,6 +151,17 @@ class BaselineSessionAnalyzer:
             deep_work_minutes=metrics.deep_work_minutes,
         )
         top_source = metrics.top_sources[0]["source"] if metrics.top_sources else "unknown"
+        localized = (
+            {
+                "insight": f"最常使用的工作环境：{top_source}",
+                "advice": "请在会话结束时记录目标是否已完成。",
+            }
+            if analysis_input.analysis_locale == "zh-CN"
+            else {
+                "insight": f"Most used context: {top_source}",
+                "advice": "Record whether the goal was completed at the end of the session.",
+            }
+        )
         return AnalysisResult(
             goal_completion=None,
             focus_score=focus_score,
@@ -156,8 +169,8 @@ class BaselineSessionAnalyzer:
             context_switches=metrics.context_switches,
             main_bottleneck=None,
             distractions=[],
-            insights=[f"Most used context: {top_source}"],
-            next_session_advice="Record whether the goal was completed at the end of the session.",
+            insights=[localized["insight"]],
+            next_session_advice=localized["advice"],
             rewards=rewards,
             model_name="baseline-v2",
         )

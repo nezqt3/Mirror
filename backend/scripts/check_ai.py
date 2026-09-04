@@ -8,6 +8,7 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 from mirror.core.config import get_settings
+from mirror.db import models as _models  # noqa: F401
 from mirror.modules.events.model import ActivityEvent, EventType
 from mirror.modules.sessions.model import FocusSession
 from mirror.services.analyzer_factory import create_analyzer
@@ -19,6 +20,12 @@ async def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--scenario", choices=SCENARIOS, default="research_overrun")
     parser.add_argument("--all", action="store_true", help="Run all quality scenarios")
+    parser.add_argument(
+        "--locale",
+        choices=("en", "zh-CN"),
+        default="en",
+        help="Language required for human-readable report values",
+    )
     args = parser.parse_args()
 
     settings = get_settings()
@@ -30,13 +37,14 @@ async def main() -> None:
         outputs = []
         selected = SCENARIOS if args.all else (args.scenario,)
         for scenario_name in selected:
-            session, events = _scenario(scenario_name)
+            session, events = _scenario(scenario_name, args.locale)
             result = await analyzer.analyze(session, events)
             outputs.append(
                 {
                     "scenario": scenario_name,
                     "session_id": str(session.id),
                     "status": "completed",
+                    "analysis_locale": session.analysis_locale,
                     "goal_completion": result.goal_completion,
                     "focus_score": result.focus_score,
                     "deep_work_minutes": result.deep_work_minutes,
@@ -54,7 +62,7 @@ async def main() -> None:
     print(json.dumps(outputs if args.all else outputs[0], ensure_ascii=False, indent=2))
 
 
-def _scenario(name: str) -> tuple[FocusSession, list[ActivityEvent]]:
+def _scenario(name: str, analysis_locale: str) -> tuple[FocusSession, list[ActivityEvent]]:
     started_at = datetime.now(UTC) - timedelta(minutes=60)
     session = FocusSession(
         id=uuid4(),
@@ -65,6 +73,7 @@ def _scenario(name: str) -> tuple[FocusSession, list[ActivityEvent]]:
             "fragmented_session": "Написать первый черновик статьи",
         }[name],
         planned_duration_minutes=60,
+        analysis_locale=analysis_locale,
         started_at=started_at,
         ended_at=started_at + timedelta(minutes=60),
     )

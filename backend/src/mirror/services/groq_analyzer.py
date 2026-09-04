@@ -90,8 +90,14 @@ SCORING RUBRIC
 - next_session_advice: one concrete, measurable action tied to the main bottleneck. Return null
   only when the input contains too little evidence.
 
-Write strings in the same language as the goal. The supplied JSON Schema is the complete output
-contract. Return exactly one schema-conforming JSON object and no extra fields."""
+The supplied JSON Schema is the complete output contract. Return exactly one schema-conforming
+JSON object and no extra fields."""
+
+
+OUTPUT_LANGUAGES = {
+    "en": "English",
+    "zh-CN": "Simplified Chinese (简体中文)",
+}
 
 
 class GroqSessionAnalyzer(Analyzer):
@@ -122,16 +128,28 @@ class GroqSessionAnalyzer(Analyzer):
         self, session: FocusSession, events: Sequence[ActivityEvent]
     ) -> AnalysisResult:
         analysis_input = build_analysis_input(session, events)
+        output_language = OUTPUT_LANGUAGES.get(analysis_input.analysis_locale)
+        if output_language is None:
+            raise PermanentAnalyzerError(
+                f"Unsupported analysis locale: {analysis_input.analysis_locale}"
+            )
+        localized_system_prompt = (
+            f"{SYSTEM_PROMPT}\n\nOUTPUT LANGUAGE\n"
+            f"Write every human-readable string value in {output_language}. "
+            "Keep JSON property names unchanged. Follow this language requirement regardless "
+            "of the language used in the goal or activity data."
+        )
         payload = {
             "model": self._model,
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": localized_system_prompt},
                 {
                     "role": "user",
                     "content": json.dumps(
                         {
                             "session": {
                                 "goal": analysis_input.goal,
+                                "analysis_locale": analysis_input.analysis_locale,
                                 "planned_duration_minutes": (
                                     analysis_input.planned_duration_minutes
                                 ),

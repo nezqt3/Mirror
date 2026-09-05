@@ -88,6 +88,8 @@ SCORING RUBRIC
 - focus_score: 90-100 sustained goal-relevant work with very little idle/switching; 70-89 mostly
   focused with limited interruptions; 40-69 fragmented or materially idle; 0-39 predominantly
   idle, distracted, or unrelated. Adjust for session length and whether switches were necessary.
+  A session with zero deep-work minutes, at least six context switches, and at least 20% idle time
+  is fragmented and must not score above 69, even if it shows some tangible progress.
 - main_bottleneck: the single highest-impact observed constraint, or null.
 - distractions: at most five observed distractions, each including concise evidence such as a
   source and count/duration. Return [] when none are supported.

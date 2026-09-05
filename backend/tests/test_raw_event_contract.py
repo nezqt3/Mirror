@@ -13,6 +13,10 @@ from mirror.modules.events.router import _raw_event_row, _validate_raw_batch
 SESSION_ID = UUID("6d994566-e187-4944-b223-143566d5f74c")
 USER_ID = UUID("d4fb0729-6ee0-447f-af9c-ebed9c852370")
 EXAMPLE_PATH = Path(__file__).parents[1] / "examples" / "raw-event-batch.json"
+SCENARIO_PATHS = (
+    Path(__file__).parents[1] / "examples" / "raw-event-batch-good.json",
+    Path(__file__).parents[1] / "examples" / "raw-event-batch-bad.json",
+)
 
 
 def test_raw_event_batch_matches_typescript_contract() -> None:
@@ -33,6 +37,14 @@ def test_swagger_example_is_kept_valid() -> None:
 
     assert payload.session_id == SESSION_ID
     assert len(payload.events) == 2
+
+
+@pytest.mark.parametrize("path", SCENARIO_PATHS)
+def test_quality_scenario_examples_are_valid(path: Path) -> None:
+    payload = RawEventBatchCreate.model_validate_json(path.read_text())
+
+    assert payload.schema_version == 1
+    assert payload.events
 
 
 def test_raw_batch_rejects_wrong_session_or_user() -> None:

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "sessionId": "11111111-1111-4111-8111-111111111111",
+  "sentAt": "2026-09-05T11:00:05Z",
+  "events": [
+    {
+      "schemaVersion": 1,
+      "eventId": "11111111-1111-4111-8111-111111111101",
+      "sessionId": "11111111-1111-4111-8111-111111111111",
+      "userId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "producerId": "desktop-main-1",
+      "producerSequence": 1,
+      "timestamp": "2026-09-05T10:00:00Z",
+      "monotonicMs": 0,
+      "platform": "macos",
+      "source": "electron",
+      "type": "app_focus",
+      "data": { "processId": 101, "appName": "VS Code", "bundleId": "com.microsoft.VSCode" }
+    },
+    {
+      "schemaVersion": 1,
+      "eventId": "11111111-1111-4111-8111-111111111102",
+      "sessionId": "11111111-1111-4111-8111-111111111111",
+      "userId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "producerId": "desktop-main-1",
+      "producerSequence": 2,
+      "timestamp": "2026-09-05T10:28:00Z",
+      "monotonicMs": 1680000,
+      "platform": "macos",
+      "source": "electron",
+      "type": "window_focus",
+      "data": { "processId": 101, "windowId": "editor-1", "title": "test_auth.py — all tests passed" }
+    },
+    {
+      "schemaVersion": 1,
+      "eventId": "11111111-1111-4111-8111-111111111103",
+      "sessionId": "11111111-1111-4111-8111-111111111111",
+      "userId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "producerId": "desktop-main-1",
+      "producerSequence": 3,
+      "timestamp": "2026-09-05T10:55:00Z",
+      "monotonicMs": 3300000,
+      "platform": "macos",
+      "source": "electron",
+      "type": "window_focus",
+      "data": { "processId": 101, "windowId": "terminal-1", "title": "pytest: 24 passed" }
+    }
+  ]
+}

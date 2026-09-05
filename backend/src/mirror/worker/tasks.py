@@ -117,7 +117,13 @@ async def _report_exists(db: AsyncSession, session_id: UUID) -> bool:
 async def _apply_rewards(
     db: AsyncSession, session: FocusSession, result: AnalysisResult
 ) -> Rewards:
-    character = await db.scalar(select(Character).where(Character.user_id == session.user_id))
+    # Serialize reward updates for the same user. Without the row lock, two workers
+    # finishing sessions concurrently could both award the once-per-day discipline point.
+    character = await db.scalar(
+        select(Character)
+        .where(Character.user_id == session.user_id)
+        .with_for_update()
+    )
     if not character:
         return result.rewards
     character.xp += result.rewards.xp

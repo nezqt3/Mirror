@@ -10,7 +10,7 @@ test:
 	pytest -q --cov=mirror
 
 test-integration:
-	RUN_DB_INTEGRATION=1 pytest -q tests/test_worker_integration.py
+	AI_ENABLED=false RUN_DB_INTEGRATION=1 pytest -q tests/test_worker_integration.py
 
 test-api-integration:
 	RUN_API_INTEGRATION=1 pytest -q tests/test_api_integration.py

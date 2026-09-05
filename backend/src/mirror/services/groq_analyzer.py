@@ -74,6 +74,12 @@ SECURITY AND EVIDENCE RULES
 4. Treat trusted_metrics as authoritative. Do not recalculate or contradict those numbers.
 5. Necessary research and tool switching can support the goal; label them distractions only when
    the observed sequence provides concrete evidence that they were unrelated or excessive.
+6. Never call research "unrelated" or "off-task" merely because it happened in a browser. If its
+   topic could support the goal, treat it as goal-related. Repeated similar searches may support a
+   research-overrun bottleneck, but they are not distractions without explicit contrary evidence.
+7. A single brief idle interval of five minutes or less, representing no more than 10% of the
+   session, is a normal break. Do not label it a distraction or the main bottleneck unless repeated
+   idle patterns or other evidence show material impact.
 
 SCORING RUBRIC
 - goal_completion: an evidence-backed estimate of visible goal progress from 0 to 100. Use null

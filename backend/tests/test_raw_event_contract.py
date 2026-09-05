@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import UUID
 
@@ -68,6 +68,29 @@ def test_raw_batch_rejects_naive_timestamps_and_duplicate_sequence() -> None:
     duplicate["events"][1]["producerSequence"] = 1
     with pytest.raises(ValidationError, match="producerSequence"):
         RawEventBatchCreate.model_validate(duplicate)
+
+
+def test_raw_batch_rejects_invalid_timeline() -> None:
+    payload = RawEventBatchCreate.model_validate(_batch())
+    received_at = datetime(2026, 9, 4, 14, 0, tzinfo=UTC)
+
+    future_batch = payload.model_copy(update={"sent_at": received_at + timedelta(minutes=6)})
+    with pytest.raises(HTTPException, match="sentAt"):
+        _validate_raw_batch(
+            future_batch,
+            SESSION_ID,
+            USER_ID,
+            received_at=received_at,
+        )
+
+    with pytest.raises(HTTPException, match="before the session"):
+        _validate_raw_batch(
+            payload,
+            SESSION_ID,
+            USER_ID,
+            session_started_at=datetime(2026, 9, 4, 13, 6, tzinfo=UTC),
+            received_at=received_at,
+        )
 
 
 def _batch() -> dict[str, object]:

@@ -68,7 +68,10 @@ def _scenario(name: str, analysis_locale: str) -> tuple[FocusSession, list[Activ
         id=uuid4(),
         user_id=uuid4(),
         goal={
-            "research_overrun": "Закончить презентацию и экспортировать финальную версию",
+            "research_overrun": (
+                "Закончить презентацию о рынке productivity-приложений и экспортировать "
+                "финальную версию"
+            ),
             "deep_work_success": "Исправить ошибку авторизации и завершить тесты",
             "fragmented_session": "Написать первый черновик статьи",
         }[name],

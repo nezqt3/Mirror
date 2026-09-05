@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, status
@@ -16,6 +16,7 @@ from mirror.services.active_sessions import (
 from mirror.worker.tasks import analyze_session
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
+MAX_CLOCK_SKEW = timedelta(minutes=5)
 
 
 @router.post("", response_model=SessionRead, status_code=status.HTTP_201_CREATED)
@@ -108,11 +109,17 @@ async def finish_session(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
     if item.status != SessionStatus.ACTIVE:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Session is not active")
-    item.ended_at = payload.ended_at or datetime.now(UTC)
+    now = datetime.now(UTC)
+    item.ended_at = payload.ended_at or now
     if item.ended_at < item.started_at:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Session end time cannot be before start time",
+        )
+    if item.ended_at > now + MAX_CLOCK_SKEW:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Session end time is too far in the future",
         )
     item.status = SessionStatus.PROCESSING
     item.analysis_error_code = None

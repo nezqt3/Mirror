@@ -3,7 +3,7 @@
 import json
 import os
 import time
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from uuid import uuid4
 
 import httpx
@@ -60,11 +60,7 @@ def run_pipeline() -> dict[str, object]:
         if accepted != {"accepted": len(batch["events"]), "duplicates": 0}:
             raise RuntimeError(f"unexpected ingest response: {accepted}")
 
-        _post(
-            client,
-            f"/sessions/{session['id']}/finish",
-            {"ended_at": _iso(started_at + timedelta(minutes=60))},
-        )
+        _post(client, f"/sessions/{session['id']}/finish", {})
         if redis_client.get(active_key) is not None:
             raise RuntimeError("active-session Redis key was not cleared after finish")
         report = _wait_for_report(client, session["id"])
@@ -94,7 +90,7 @@ def _raw_batch(session_id: str, user_id: str, start: datetime) -> dict[str, obje
                 "userId": user_id,
                 "producerId": producer_id,
                 "producerSequence": sequence,
-                "timestamp": _iso(start + timedelta(minutes=minute)),
+                "timestamp": _iso(start),
                 "monotonicMs": minute * 60_000,
                 "platform": "macos",
                 "source": "electron",
@@ -105,7 +101,7 @@ def _raw_batch(session_id: str, user_id: str, start: datetime) -> dict[str, obje
     return {
         "schemaVersion": 1,
         "sessionId": session_id,
-        "sentAt": _iso(start + timedelta(minutes=60)),
+        "sentAt": _iso(datetime.now(UTC)),
         "events": events,
     }
 

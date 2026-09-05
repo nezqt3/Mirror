@@ -200,9 +200,11 @@ def _idle_minutes(events: Sequence[ActivityEvent], ended_at: datetime | None) ->
 
 
 def _context_switches(events: Sequence[ActivityEvent]) -> int:
+    # Window-focus events do not identify an application consistently across platforms.
+    # App/browser focus events already capture actual context changes without counting
+    # a window-title update inside the same app as a switch.
     relevant = {
         EventType.APP_FOCUS,
-        EventType.WINDOW_FOCUS,
         EventType.URL_VISIT,
     }
     previous: str | None = None
@@ -224,7 +226,6 @@ def _deep_work_minutes(
 
     relevant = {
         EventType.APP_FOCUS,
-        EventType.WINDOW_FOCUS,
         EventType.URL_VISIT,
         EventType.IDLE_START,
         EventType.IDLE_END,

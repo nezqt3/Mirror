@@ -1,4 +1,5 @@
 export { MirrorCharacterPage, type MirrorCharacterPageProps } from "./ui/MirrorCharacterPage";
+export { MirrorAvatar } from "./ui/MirrorAvatar";
 export { baseMirrorCharacter, characterSessionProgress } from "./model/mockCharacter";
 export {
   characterStatDefinitions,

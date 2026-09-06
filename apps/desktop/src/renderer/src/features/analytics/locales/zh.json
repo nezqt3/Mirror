@@ -1,0 +1,8 @@
+{
+  "header": { "eyebrow": "工作模式", "title": "分析", "description": "了解注意力在哪里形成动力，又在哪里悄悄流失。", "mockData": "预览数据" },
+  "score": { "eyebrow": "本周", "title": "专注节奏良好", "description": "最好的会话通常发生在第一次重要上下文切换之前。", "trend": "比上周提高 8 分" },
+  "weekly": { "eyebrow": "深度工作", "title": "每周节奏", "ariaLabel": "每日深度工作分钟数" },
+  "days": { "mon": "一", "tue": "二", "wed": "三", "thu": "四", "fri": "五", "sat": "六", "sun": "日" },
+  "kpis": { "deepWork": "深度工作", "minutes": "分钟", "sessions": "完成会话", "completed": "已完成", "switches": "上下文切换", "contexts": "本周" },
+  "insights": { "pattern": { "eyebrow": "发现模式", "title": "专注在 25 分钟后增强", "description": "超过 25 分钟的会话完成预期成果的可能性高出 34%。" }, "next": { "eyebrow": "下一次会话", "title": "保护第一个专注区块", "description": "开始前关闭通讯应用。第一次切换发生在第 30 分钟之后时，你的工作表现最好。" } }
+}

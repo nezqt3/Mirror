@@ -1,66 +1,145 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { SessionState } from "@mirror/contracts";
-import { Badge, Button, Eyebrow, Field, Heading, Icon, Select, Surface, Text, Textarea, type BadgeTone, type IconName } from "./shared/ui";
-import { baseMirrorCharacter, characterSessionProgress, MirrorCharacterPage } from "./features/mirror-character";
+import {
+  Badge,
+  Button,
+  Eyebrow,
+  Field,
+  Heading,
+  Icon,
+  Select,
+  Surface,
+  Text,
+  Textarea,
+  type BadgeTone,
+  type IconName,
+} from "./shared/ui";
+import {
+  baseMirrorCharacter,
+  characterSessionProgress,
+  MirrorCharacterPage,
+} from "./features/mirror-character";
 import { SettingsPage } from "./features/settings";
+import { toAnalysisLocale, useLanguage } from "./shared/i18n";
+import mirrorAvatar from "./assets/mirror-avatar.png";
 
 type View = "home" | "sessions" | "insights" | "character" | "settings";
 
-const navigation: Array<{ id: View; label: string; icon: IconName }> = [
-  { id: "home", label: "Home", icon: "home" },
-  { id: "sessions", label: "Focus Sessions", icon: "clock" },
-  { id: "insights", label: "Insights", icon: "insights" },
-  { id: "character", label: "Mirror Character", icon: "character" },
-  { id: "settings", label: "Settings", icon: "settings" }
+const navigation: Array<{ id: View; icon: IconName }> = [
+  { id: "home", icon: "home" },
+  { id: "sessions", icon: "clock" },
+  { id: "insights", icon: "insights" },
+  { id: "character", icon: "character" },
+  { id: "settings", icon: "settings" },
 ];
+
+const DURATION_STORAGE_KEY = "mirror.default-duration";
+
+function readStoredDuration(): number {
+  const value = Number(window.localStorage.getItem(DURATION_STORAGE_KEY));
+
+  return [25, 45, 60, 90, 120].includes(value) ? value : 90;
+}
 
 const idleState: SessionState = {
   status: "idle",
   sessionId: null,
   config: null,
   startedAt: null,
+  plannedEndsAt: null,
   eventCount: 0,
-  error: null
+  error: null,
 };
 
 export function App(): React.JSX.Element {
+  const { t } = useTranslation("app");
+  const { language } = useLanguage();
+
   const [activeView, setActiveView] = useState<View>("home");
-  const [goal, setGoal] = useState("Finish the product presentation");
-  const [durationMinutes, setDurationMinutes] = useState(90);
+  const [goal, setGoal] = useState(() => t("home.session.defaultGoal"));
+  const [durationMinutes, setDurationMinutes] = useState(readStoredDuration);
   const [session, setSession] = useState<SessionState>(idleState);
   const [error, setError] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     const api = window.mirror;
+
     if (!api) {
-      setError("Desktop bridge is unavailable. Restart Mirror from the Electron app.");
+      setError(t("errors.bridgeUnavailable"));
       return undefined;
     }
 
-    void api.getSessionState().then(setSession).catch((caught: unknown) => {
-      setError(caught instanceof Error ? caught.message : "Unable to read session state");
-    });
+    void api
+      .getSessionState()
+      .then(setSession)
+      .catch((caught: unknown) => {
+        setError(
+          caught instanceof Error ? caught.message : t("errors.readSession"),
+        );
+      });
+
     return api.onSessionStateChanged(setSession);
-  }, []);
+  }, [t]);
+
+  useEffect(() => {
+    window.localStorage.setItem(DURATION_STORAGE_KEY, String(durationMinutes));
+  }, [durationMinutes]);
+
+  useEffect(() => {
+    if (session.status !== "running" || !session.plannedEndsAt) {
+      return undefined;
+    }
+
+    setNow(Date.now());
+
+    const interval = window.setInterval(() => setNow(Date.now()), 1_000);
+
+    return () => window.clearInterval(interval);
+  }, [session.status, session.plannedEndsAt]);
 
   const isActive = ["starting", "running", "stopping"].includes(session.status);
+
   const statusLabel = useMemo(
-    () => session.status.charAt(0).toUpperCase() + session.status.slice(1),
-    [session.status]
+    () => t(`status.${session.status}`),
+    [session.status, t],
   );
-  const statusTone: BadgeTone = session.status === "running"
-    ? "success"
-    : session.status === "failed"
-      ? "danger"
-      : ["starting", "stopping"].includes(session.status)
-        ? "warning"
-        : "neutral";
+
+  const statusTone: BadgeTone =
+    session.status === "running"
+      ? "success"
+      : session.status === "failed"
+        ? "danger"
+        : ["starting", "stopping"].includes(session.status)
+          ? "warning"
+          : "neutral";
+
+  const remainingSeconds = session.plannedEndsAt
+    ? Math.max(
+        0,
+        Math.ceil((new Date(session.plannedEndsAt).getTime() - now) / 1_000),
+      )
+    : durationMinutes * 60;
+
+  const remainingLabel = `${String(Math.floor(remainingSeconds / 60)).padStart(
+    2,
+    "0",
+  )}:${String(remainingSeconds % 60).padStart(2, "0")}`;
+
+  const activeNavigationItem = navigation.find(
+    (item) => item.id === activeView,
+  );
 
   const toggleSession = async (): Promise<void> => {
     setError(null);
+
     try {
       const api = window.mirror;
-      if (!api) throw new Error("Desktop bridge is unavailable");
+
+      if (!api) {
+        throw new Error(t("errors.bridgeUnavailableShort"));
+      }
 
       if (session.status === "running") {
         await api.stopSession();
@@ -68,11 +147,16 @@ export function App(): React.JSX.Element {
         await api.startSession({
           goal,
           durationMinutes,
-          captureScreenshots: false
+          captureScreenshots: false,
+          clientTimezone:
+            Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+          analysisLocale: toAnalysisLocale(language),
         });
       }
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Unable to update the session");
+      setError(
+        caught instanceof Error ? caught.message : t("errors.updateSession"),
+      );
     }
   };
 
@@ -80,33 +164,43 @@ export function App(): React.JSX.Element {
     <main className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <span className="brand-mark">M</span>
+          <span className="brand-mark">
+            <img src={mirrorAvatar} alt="" />
+          </span>
+
           <span className="brand-name">Mirror</span>
         </div>
 
-        <nav className="navigation" aria-label="Main navigation">
-          {navigation.map((item) => (
-            <Button
-              key={item.id}
-              type="button"
-              variant="ghost"
-              size="md"
-              icon={item.icon}
-              className={activeView === item.id ? "nav-item active" : "nav-item"}
-              onClick={() => setActiveView(item.id)}
-              aria-current={activeView === item.id ? "page" : undefined}
-              title={item.label}
-            >
-              {item.label}
-            </Button>
-          ))}
+        <nav className="navigation" aria-label={t("navigation.ariaLabel")}>
+          {navigation.map((item) => {
+            const label = t(`navigation.${item.id}`);
+
+            return (
+              <Button
+                key={item.id}
+                type="button"
+                variant="ghost"
+                size="md"
+                icon={item.icon}
+                className={
+                  activeView === item.id ? "nav-item active" : "nav-item"
+                }
+                onClick={() => setActiveView(item.id)}
+                aria-current={activeView === item.id ? "page" : undefined}
+                title={label}
+              >
+                {label}
+              </Button>
+            );
+          })}
         </nav>
 
         <div className="sidebar-footer">
           <span className="avatar">DA</span>
+
           <div>
             <strong>Denis</strong>
-            <span>Personal workspace</span>
+            <span>{t("sidebar.workspace")}</span>
           </div>
         </div>
       </aside>
@@ -114,26 +208,48 @@ export function App(): React.JSX.Element {
       <div className="workspace">
         <header className="topbar">
           <div>
-            <p className="workspace-label">WORKSPACE</p>
-            <strong>{navigation.find((item) => item.id === activeView)?.label}</strong>
+            <p className="workspace-label">{t("topbar.workspace")}</p>
+
+            <strong>
+              {activeNavigationItem
+                ? t(`navigation.${activeNavigationItem.id}`)
+                : ""}
+            </strong>
           </div>
-        <Badge tone={statusTone} dot>
-          {statusLabel}
-        </Badge>
-      </header>
+
+          <Badge tone={statusTone} dot>
+            {statusLabel}
+          </Badge>
+        </header>
 
         {activeView === "home" ? (
           <div className="page-content">
             <section className="hero">
-              <Eyebrow>YOUR NEXT FOCUS SESSION</Eyebrow>
-              <Heading>What will you finish?</Heading>
+              <Eyebrow>{t("home.hero.eyebrow")}</Eyebrow>
+
+              <Heading>{t("home.hero.title")}</Heading>
+
               <Text size="lg" className="subtitle">
-                Set one clear outcome. Mirror will understand how the work unfolds.
+                {t("home.hero.description")}
               </Text>
             </section>
 
             <Surface as="section" className="session-card">
-              <Field label="Session goal" htmlFor="goal">
+              {isActive ? (
+                <div
+                  className="countdown"
+                  aria-live="polite"
+                  aria-label={t("home.session.secondsRemaining", {
+                    seconds: remainingSeconds,
+                  })}
+                >
+                  <span>{t("home.session.timeRemaining")}</span>
+
+                  <strong>{remainingLabel}</strong>
+                </div>
+              ) : null}
+
+              <Field label={t("home.session.goal")} htmlFor="goal">
                 <Textarea
                   id="goal"
                   value={goal}
@@ -145,16 +261,24 @@ export function App(): React.JSX.Element {
               </Field>
 
               <div className="controls">
-                <Field className="duration" label="Duration" htmlFor="duration">
+                <Field
+                  className="duration"
+                  label={t("home.session.duration")}
+                  htmlFor="duration"
+                >
                   <Select
                     id="duration"
                     value={durationMinutes}
-                    onChange={(event) => setDurationMinutes(Number(event.target.value))}
+                    onChange={(event) =>
+                      setDurationMinutes(Number(event.target.value))
+                    }
                     disabled={isActive}
                   >
                     {[25, 45, 60, 90, 120].map((minutes) => (
                       <option key={minutes} value={minutes}>
-                        {minutes} min
+                        {t("home.session.minutes", {
+                          minutes,
+                        })}
                       </option>
                     ))}
                   </Select>
@@ -165,12 +289,17 @@ export function App(): React.JSX.Element {
                   size="lg"
                   variant={session.status === "running" ? "danger" : "primary"}
                   icon={session.status === "running" ? "stop" : "play"}
-                  loading={session.status === "starting" || session.status === "stopping"}
+                  loading={
+                    session.status === "starting" ||
+                    session.status === "stopping"
+                  }
                   className="session-action"
                   onClick={() => void toggleSession()}
                   disabled={!window.mirror}
                 >
-                  {session.status === "running" ? "Finish session" : "Start focus session"}
+                  {session.status === "running"
+                    ? t("home.session.finish")
+                    : t("home.session.start")}
                 </Button>
               </div>
 
@@ -182,18 +311,32 @@ export function App(): React.JSX.Element {
               ) : null}
             </Surface>
 
-            <section className="metrics" aria-label="Live session signals">
+            <section
+              className="metrics"
+              aria-label={t("home.metrics.ariaLabel")}
+            >
               <Surface as="article" variant="subtle">
-                <span>Captured signals</span>
+                <span>{t("home.metrics.capturedSignals")}</span>
+
                 <strong>{session.eventCount}</strong>
               </Surface>
+
               <Surface as="article" variant="subtle">
-                <span>Privacy mode</span>
-                <strong>On</strong>
+                <span>{t("home.metrics.privacyMode")}</span>
+
+                <strong>{t("home.metrics.privacyOn")}</strong>
               </Surface>
+
               <Surface as="article" variant="subtle">
-                <span>Analysis</span>
-                <strong>After session</strong>
+                <span>{t("home.metrics.timer")}</span>
+
+                <strong>
+                  {isActive
+                    ? remainingLabel
+                    : t("home.session.minutes", {
+                        minutes: durationMinutes,
+                      })}
+                </strong>
               </Surface>
             </section>
           </div>
@@ -207,11 +350,18 @@ export function App(): React.JSX.Element {
         ) : (
           <section className="empty-page">
             <span className="empty-icon">
-              <Icon name={navigation.find((item) => item.id === activeView)?.icon ?? "home"} size={20} />
+              <Icon name={activeNavigationItem?.icon ?? "home"} size={20} />
             </span>
-            <Eyebrow>MIRROR WORKSPACE</Eyebrow>
-            <Heading size="title">{navigation.find((item) => item.id === activeView)?.label}</Heading>
-            <Text>This space is ready for the next part of your Mirror experience.</Text>
+
+            <Eyebrow>{t("empty.eyebrow")}</Eyebrow>
+
+            <Heading size="title">
+              {activeNavigationItem
+                ? t(`navigation.${activeNavigationItem.id}`)
+                : ""}
+            </Heading>
+
+            <Text>{t("empty.description")}</Text>
           </section>
         )}
       </div>

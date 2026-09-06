@@ -1,0 +1,57 @@
+{
+  "navigation": {
+    "ariaLabel": "主导航",
+    "home": "首页",
+    "sessions": "专注会话",
+    "insights": "洞察",
+    "character": "Mirror 角色",
+    "settings": "设置"
+  },
+  "sidebar": {
+    "workspace": "个人工作区"
+  },
+  "topbar": {
+    "workspace": "工作区"
+  },
+  "status": {
+    "idle": "空闲",
+    "starting": "正在启动",
+    "running": "进行中",
+    "stopping": "正在结束",
+    "failed": "失败"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "你的下一次专注会话",
+      "title": "你准备完成什么？",
+      "description": "设定一个明确的目标。Mirror 会帮助你了解工作是如何展开的。"
+    },
+    "session": {
+      "timeRemaining": "剩余时间",
+      "secondsRemaining": "剩余 {{seconds}} 秒",
+      "goal": "会话目标",
+      "defaultGoal": "完成产品演示文稿",
+      "duration": "时长",
+      "minutes": "{{minutes}} 分钟",
+      "finish": "结束会话",
+      "start": "开始专注会话"
+    },
+    "metrics": {
+      "ariaLabel": "实时会话信号",
+      "capturedSignals": "已采集信号",
+      "privacyMode": "隐私模式",
+      "privacyOn": "开启",
+      "timer": "计时器"
+    }
+  },
+  "empty": {
+    "eyebrow": "MIRROR 工作区",
+    "description": "此空间已准备好用于你的下一项 Mirror 功能。"
+  },
+  "errors": {
+    "bridgeUnavailable": "桌面连接不可用。请通过 Electron 应用重新启动 Mirror。",
+    "bridgeUnavailableShort": "桌面连接不可用",
+    "readSession": "无法读取会话状态",
+    "updateSession": "无法更新会话"
+  }
+}

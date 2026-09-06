@@ -5,8 +5,10 @@ import {
   helperMessageSchema,
   type FocusSessionConfig,
   type HelperCommand,
+  type InstalledApplication,
   type PermissionStatus,
-  type Platform
+  type Platform,
+  type PrivacySettings
 } from "@mirror/contracts";
 import type { CaptureAdapter, CaptureEventHandler } from "./CaptureAdapter.js";
 
@@ -34,13 +36,111 @@ export class NativeProcessCaptureAdapter implements CaptureAdapter {
     }
   }
 
-  async getPermissionStatus(): Promise<PermissionStatus> {
-    return this.isAvailable() ? "unknown" : "not-determined";
+  async requestPermissions(
+    config: FocusSessionConfig,
+    privacy: PrivacySettings
+  ): Promise<PermissionStatus> {
+    if (!this.isAvailable()) return "not-determined";
+
+    const child = spawn(this.executablePath, this.args, { stdio: ["pipe", "pipe", "pipe"] });
+    const lines = createInterface({ input: child.stdout });
+
+    return new Promise((resolve, reject) => {
+      let requested = false;
+      const cleanup = (): void => {
+        clearTimeout(timeout);
+        lines.close();
+        if (!child.killed) child.kill("SIGTERM");
+      };
+      const timeout = setTimeout(() => {
+        cleanup();
+        reject(new Error(`${this.name} did not report system permissions`));
+      }, START_TIMEOUT_MS);
+
+      lines.on("line", (line) => {
+        let raw: unknown;
+        try {
+          raw = JSON.parse(line);
+        } catch {
+          return;
+        }
+        const parsed = helperMessageSchema.safeParse(raw);
+        if (!parsed.success || parsed.data.kind !== "status" || parsed.data.status !== "ready") {
+          return;
+        }
+
+        if (!requested) {
+          requested = true;
+          const command: HelperCommand = {
+            command: "permissions",
+            requiresScreenCapture: config.captureScreenshots || privacy.captureWindowTitles
+          };
+          child.stdin.write(`${JSON.stringify(command)}\n`);
+          return;
+        }
+
+        const permission = parsed.data.permissions ?? "unknown";
+        cleanup();
+        resolve(permission);
+      });
+      child.once("exit", (code) => {
+        if (code !== null && code !== 0) {
+          cleanup();
+          reject(new Error(`${this.name} exited with code ${code}`));
+        }
+      });
+    });
+  }
+
+  async listApplications(): Promise<InstalledApplication[]> {
+    if (!this.isAvailable()) return [];
+
+    const child = spawn(this.executablePath, this.args, { stdio: ["pipe", "pipe", "pipe"] });
+    const lines = createInterface({ input: child.stdout });
+
+    return new Promise((resolve, reject) => {
+      let requested = false;
+      const cleanup = (): void => {
+        clearTimeout(timeout);
+        lines.close();
+        if (!child.killed) child.kill("SIGTERM");
+      };
+      const timeout = setTimeout(() => {
+        cleanup();
+        reject(new Error(`${this.name} did not return the application list`));
+      }, START_TIMEOUT_MS);
+
+      lines.on("line", (line) => {
+        let raw: unknown;
+        try {
+          raw = JSON.parse(line);
+        } catch {
+          return;
+        }
+        const parsed = helperMessageSchema.safeParse(raw);
+        if (!parsed.success) return;
+        if (parsed.data.kind === "status" && parsed.data.status === "ready" && !requested) {
+          requested = true;
+          child.stdin.write(`${JSON.stringify({ command: "applications" })}\n`);
+        } else if (parsed.data.kind === "applications") {
+          const applications = parsed.data.applications;
+          cleanup();
+          resolve(applications);
+        }
+      });
+      child.once("exit", (code) => {
+        if (code !== null && code !== 0) {
+          cleanup();
+          reject(new Error(`${this.name} exited with code ${code}`));
+        }
+      });
+    });
   }
 
   async start(
     sessionId: string,
     _config: FocusSessionConfig,
+    privacy: PrivacySettings,
     onEvent: CaptureEventHandler
   ): Promise<void> {
     if (!this.isAvailable()) {
@@ -60,7 +160,7 @@ export class NativeProcessCaptureAdapter implements CaptureAdapter {
     });
 
     await this.waitForStatus("ready");
-    this.send({ command: "start", sessionId });
+    this.send({ command: "start", sessionId, privacy });
     await this.waitForStatus("started");
   }
 

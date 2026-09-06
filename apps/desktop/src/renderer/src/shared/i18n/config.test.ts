@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { languageConfig, resolveLanguage } from "./config.js";
+import { languageConfig, resolveLanguage, toAnalysisLocale } from "./config.js";
 
 describe("language configuration", () => {
   it("resolves supported regional locales", () => {
@@ -7,7 +7,12 @@ describe("language configuration", () => {
     expect(resolveLanguage("en-US")).toBe("en");
   });
 
+  it("uses the backend locale expected for Chinese analysis", () => {
+    expect(toAnalysisLocale("zh")).toBe("zh-CN");
+    expect(toAnalysisLocale("ru")).toBe("ru");
+  });
+
   it("uses the configured fallback for unknown locales", () => {
-    expect(resolveLanguage("ru-RU")).toBe(languageConfig.fallbackLanguage);
+    expect(resolveLanguage("de-DE")).toBe(languageConfig.fallbackLanguage);
   });
 });

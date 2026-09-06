@@ -22,7 +22,7 @@ export function createCaptureAdapter(): CaptureAdapter {
       "swift-capture-helper",
       executable
     );
-    return adapter.isAvailable() ? adapter : fallback;
+    return adapter;
   }
 
   if (process.platform === "win32") {
@@ -37,7 +37,7 @@ export function createCaptureAdapter(): CaptureAdapter {
       "dotnet-capture-helper",
       executable
     );
-    return adapter.isAvailable() ? adapter : fallback;
+    return adapter;
   }
 
   return fallback;

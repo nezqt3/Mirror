@@ -6,6 +6,22 @@ import Foundation
 private struct HelperCommand: Decodable {
     let command: String
     let sessionId: String?
+    let privacy: PrivacyFilters?
+    let requiresScreenCapture: Bool?
+}
+
+private struct PrivacyFilters: Decodable {
+    let blockedApplications: [String]
+    let blockedWindowTitleKeywords: [String]
+    let blockedDomains: [String]
+    let captureWindowTitles: Bool
+
+    static let defaults = PrivacyFilters(
+        blockedApplications: [],
+        blockedWindowTitleKeywords: [],
+        blockedDomains: [],
+        captureWindowTitles: true
+    )
 }
 
 private final class CaptureHelper {
@@ -14,6 +30,7 @@ private final class CaptureHelper {
     private var timer: DispatchSourceTimer?
     private var sessionId: String?
     private var lastApplicationKey: String?
+    private var privacy = PrivacyFilters.defaults
 
     func handle(_ command: HelperCommand) {
         switch command.command {
@@ -22,11 +39,19 @@ private final class CaptureHelper {
                 emitError(code: "invalid_session", message: "A valid sessionId is required")
                 return
             }
-            start(sessionId: sessionId)
+            start(sessionId: sessionId, privacy: command.privacy ?? .defaults)
         case "stop":
             stop()
         case "permissions":
-            emitStatus("ready", permissions: accessibilityPermission())
+            emitStatus(
+                "ready",
+                permissions: systemPermission(
+                    requestAccess: true,
+                    requiresScreenCapture: command.requiresScreenCapture ?? false
+                )
+            )
+        case "applications":
+            emitInstalledApplications()
         case "ping":
             emitStatus("pong")
         default:
@@ -35,16 +60,14 @@ private final class CaptureHelper {
     }
 
     func emitReady() {
-        emitStatus("ready", permissions: accessibilityPermission())
+        emitStatus("ready", permissions: systemPermission())
     }
 
-    private func start(sessionId: String) {
+    private func start(sessionId: String, privacy: PrivacyFilters) {
         stop(emitStatusMessage: false)
         self.sessionId = sessionId
+        self.privacy = privacy
         lastApplicationKey = nil
-
-        let promptOptions = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
-        _ = AXIsProcessTrustedWithOptions(promptOptions)
 
         let timer = DispatchSource.makeTimerSource(queue: captureQueue)
         timer.schedule(deadline: .now(), repeating: .milliseconds(750), leeway: .milliseconds(100))
@@ -53,7 +76,7 @@ private final class CaptureHelper {
         }
         self.timer = timer
         timer.resume()
-        emitStatus("started", permissions: accessibilityPermission())
+        emitStatus("started", permissions: systemPermission())
     }
 
     private func stop(emitStatusMessage: Bool = true) {
@@ -80,12 +103,23 @@ private final class CaptureHelper {
         guard key != lastApplicationKey else { return }
         lastApplicationKey = key
 
+        let blockedApplication = privacy.blockedApplications.contains { candidate in
+            normalized(candidate) == normalized(applicationName) ||
+                normalized(candidate) == normalized(bundleIdentifier)
+        }
+        let blockedTitle = windowTitle.map { title in
+            privacy.blockedWindowTitleKeywords.contains { candidate in
+                !normalized(candidate).isEmpty && normalized(title).contains(normalized(candidate))
+            }
+        } ?? false
+        guard !blockedApplication, !blockedTitle else { return }
+
         var payload: [String: Any] = [
             "applicationName": applicationName,
             "bundleIdentifier": bundleIdentifier,
             "processId": application.processIdentifier
         ]
-        if let windowTitle, !windowTitle.isEmpty {
+        if privacy.captureWindowTitles, let windowTitle, !windowTitle.isEmpty {
             payload["windowTitle"] = windowTitle
         }
 
@@ -115,8 +149,67 @@ private final class CaptureHelper {
         }?[kCGWindowName as String] as? String
     }
 
-    private func accessibilityPermission() -> String {
-        AXIsProcessTrusted() ? "granted" : "not-determined"
+    private func systemPermission(
+        requestAccess: Bool = false,
+        requiresScreenCapture: Bool = false
+    ) -> String {
+        let accessibilityGranted: Bool
+        if requestAccess {
+            let prompt = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
+                as CFDictionary
+            accessibilityGranted = AXIsProcessTrustedWithOptions(prompt)
+        } else {
+            accessibilityGranted = AXIsProcessTrusted()
+        }
+
+        let screenCaptureGranted = !requiresScreenCapture || (
+            requestAccess ? CGRequestScreenCaptureAccess() : CGPreflightScreenCaptureAccess()
+        )
+        return accessibilityGranted && screenCaptureGranted ? "granted" : "not-determined"
+    }
+
+    private func emitInstalledApplications() {
+        let fileManager = FileManager.default
+        let roots = [
+            URL(fileURLWithPath: "/Applications", isDirectory: true),
+            fileManager.homeDirectoryForCurrentUser.appendingPathComponent("Applications", isDirectory: true),
+            URL(fileURLWithPath: "/System/Applications", isDirectory: true)
+        ]
+        var seen = Set<String>()
+        var applications: [[String: Any]] = []
+
+        for root in roots where fileManager.fileExists(atPath: root.path) {
+            guard let enumerator = fileManager.enumerator(
+                at: root,
+                includingPropertiesForKeys: nil,
+                options: [.skipsHiddenFiles, .skipsPackageDescendants]
+            ) else { continue }
+
+            for case let url as URL in enumerator where url.pathExtension.lowercased() == "app" {
+                let bundle = Bundle(url: url)
+                let bundleIdentifier = bundle?.bundleIdentifier
+                let name = (bundle?.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String)
+                    ?? (bundle?.object(forInfoDictionaryKey: "CFBundleName") as? String)
+                    ?? url.deletingPathExtension().lastPathComponent
+                let identity = bundleIdentifier ?? url.standardizedFileURL.path
+                guard seen.insert(identity).inserted else { continue }
+                applications.append([
+                    "name": name,
+                    "bundleIdentifier": bundleIdentifier ?? NSNull()
+                ])
+            }
+        }
+
+        applications.sort {
+            ($0["name"] as? String ?? "").localizedCaseInsensitiveCompare(
+                $1["name"] as? String ?? ""
+            ) == .orderedAscending
+        }
+        emit(["kind": "applications", "applications": applications])
+    }
+
+    private func normalized(_ value: String) -> String {
+        value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
 
     private func emitStatus(_ status: String, permissions: String? = nil) {
@@ -156,7 +249,12 @@ while let line = readLine() {
     do {
         helper.handle(try JSONDecoder().decode(HelperCommand.self, from: data))
     } catch {
-        let fallback = HelperCommand(command: "invalid", sessionId: nil)
+        let fallback = HelperCommand(
+            command: "invalid",
+            sessionId: nil,
+            privacy: nil,
+            requiresScreenCapture: nil
+        )
         helper.handle(fallback)
     }
 }

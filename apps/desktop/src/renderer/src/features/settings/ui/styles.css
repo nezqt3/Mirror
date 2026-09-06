@@ -24,6 +24,109 @@
   padding: var(--ui-space-6);
 }
 
+.settings-section + .settings-section {
+  margin-top: var(--ui-space-4);
+}
+
+.privacy-section {
+  display: grid;
+  align-items: start;
+}
+
+.privacy-fields {
+  display: grid;
+  gap: var(--ui-space-5);
+}
+
+.application-picker {
+  display: grid;
+  max-height: 240px;
+  margin-top: var(--ui-space-2);
+  overflow-y: auto;
+  border: 1px solid var(--ui-color-border-subtle);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-color-bg-input);
+}
+
+.application-picker > p,
+.application-picker__selected {
+  margin: 0;
+  padding: var(--ui-space-3);
+  color: var(--ui-color-text-muted);
+  font-size: var(--ui-font-size-xs);
+}
+
+.application-option {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  padding: 10px var(--ui-space-3);
+  cursor: pointer;
+}
+
+.application-option + .application-option {
+  border-top: 1px solid var(--ui-color-border-subtle);
+}
+
+.application-option:hover {
+  background: rgba(119, 91, 229, 0.08);
+}
+
+.application-option input {
+  accent-color: var(--ui-color-violet-500);
+}
+
+.application-option span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.application-option small {
+  overflow: hidden;
+  color: var(--ui-color-text-faint);
+  font-size: var(--ui-font-size-2xs);
+  text-overflow: ellipsis;
+}
+
+.application-picker__selected {
+  padding: var(--ui-space-2) 0 0;
+}
+
+.privacy-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ui-space-3);
+  cursor: pointer;
+}
+
+.privacy-toggle input {
+  margin-top: 3px;
+  accent-color: var(--ui-color-violet-500);
+}
+
+.privacy-toggle span {
+  display: grid;
+  gap: 4px;
+}
+
+.privacy-toggle small,
+.privacy-actions p {
+  color: var(--ui-color-text-muted);
+  font-size: var(--ui-font-size-xs);
+}
+
+.privacy-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-4);
+}
+
+.privacy-actions p {
+  margin: 0;
+}
+
 .settings-section__copy {
   display: grid;
   max-width: 520px;

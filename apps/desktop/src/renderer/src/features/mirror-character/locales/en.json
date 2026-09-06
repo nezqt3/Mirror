@@ -1,0 +1,49 @@
+{
+  "header": {
+    "eyebrow": "YOUR GROWTH, MADE VISIBLE",
+    "title": "Mirror Character",
+    "description": "Every focused session shapes the way your character grows.",
+    "baseCharacter": "Base character"
+  },
+  "identity": {
+    "level": "Level {{level}}",
+    "description": "Your steady guide for deliberate work.",
+    "progressToLevel": "Progress to level {{level}}",
+    "xpAriaLabel": "{{current}} of {{required}} XP"
+  },
+  "stats": {
+    "eyebrow": "CORE TRAITS",
+    "title": "Current attributes",
+    "items": {
+      "focus": {
+        "label": "Focus",
+        "description": "Your ability to stay engaged with the task at hand."
+      },
+      "stamina": {
+        "label": "Stamina",
+        "description": "Your capacity to maintain productive effort over time."
+      },
+      "execution": {
+        "label": "Execution",
+        "description": "Your ability to turn intentions into completed work."
+      },
+      "discipline": {
+        "label": "Discipline",
+        "description": "Your consistency in protecting focus and following through."
+      }
+    }
+  },
+  "session": {
+    "eyebrow": "LAST FOCUS SESSION",
+    "title": "Before and after",
+    "xpEarned": "+{{xp}} XP earned",
+    "replayXp": "Replay XP",
+    "table": {
+      "ariaLabel": "Character stats before and after the last session",
+      "attribute": "Attribute",
+      "before": "Before",
+      "after": "After",
+      "change": "Change"
+    }
+  }
+}

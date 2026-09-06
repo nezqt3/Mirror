@@ -12,7 +12,9 @@ Mirror/
 │           ├── main/            Trusted orchestration process
 │           │   ├── capture/     Platform adapters and helper transport
 │           │   ├── ipc/         Allowlisted renderer operations
-│           │   └── session/     Focus Session lifecycle
+│           │   ├── privacy/     Cross-platform event filtering policy
+│           │   ├── session/     Focus Session lifecycle
+│           │   └── storage/     Replaceable local repositories
 │           ├── preload/         Narrow contextBridge API
 │           └── renderer/        React + TypeScript UI
 ├── packages/
@@ -57,9 +59,10 @@ All commands and responses are defined in `@mirror/contracts` and validated at r
 
 Commands:
 
-- `start` with a Focus Session UUID;
+- `start` with a Focus Session UUID and an immutable privacy-filter snapshot;
 - `stop`;
 - `permissions`;
+- `applications` to enumerate installed macOS apps for the privacy picker;
 - `ping`.
 
 Messages:
@@ -69,6 +72,20 @@ Messages:
 - `error` containing a stable error code and safe message.
 
 Platform-specific payloads are allowed only inside `event.payload`. Identity, session, time, event type, platform, and source fields remain stable across platforms.
+
+## Timer, privacy, and local persistence
+
+`SessionManager` owns the authoritative deadline and automatically completes a session when it expires. The renderer derives its countdown from `plannedEndsAt`, so UI pauses or delayed frames cannot extend a session.
+
+Privacy settings are stored in `mirror-data/privacy-settings.json` under Electron's per-user data directory. A snapshot is passed to the native helper at session start. macOS drops blocked applications and window-title matches before emitting an event; Electron applies the same policy again before persistence and also handles domain filters for future browser events.
+
+Each session is stored under `mirror-data/sessions/<session-id>/`:
+
+- `session.json` — immutable start metadata, configuration, backend-ready creation payload, and privacy snapshot;
+- `events.ndjson` — append-only normalized capture events;
+- `completed.json` — completion time, reason, and final event count.
+
+Persistence is hidden behind `SessionRepository`. A future backend uploader should consume this repository output or implement a separate sync gateway; it must not be introduced into the native capture helper or renderer.
 
 ## Scaling rules
 
@@ -85,7 +102,7 @@ Platform-specific payloads are allowed only inside `event.payload`. Identity, se
 - backend gateway with resumable session upload;
 - permissions onboarding for macOS and Windows;
 - screenshot capture behind an explicit per-session capability;
-- application and website blacklist enforcement before persistence;
+- retention controls and optional encryption for the local event store;
 - structured observability with privacy-safe diagnostics;
 - signed and packaged native helpers for production distribution.
 

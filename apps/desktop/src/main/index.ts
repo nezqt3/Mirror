@@ -1,11 +1,21 @@
 import { join } from "node:path";
-import { app, BrowserWindow, shell } from "electron";
+import { app, BrowserWindow, nativeImage, shell } from "electron";
 import { createCaptureAdapter } from "./capture/createCaptureAdapter.js";
 import { registerSessionIpc } from "./ipc/registerSessionIpc.js";
 import { SessionManager } from "./session/SessionManager.js";
+import { LocalSessionRepository } from "./storage/SessionRepository.js";
+import { LocalSettingsRepository } from "./storage/SettingsRepository.js";
 
 let mainWindow: BrowserWindow | null = null;
 let disposeIpc: (() => void) | null = null;
+
+app.setName("Mirror");
+
+function appIconPath(): string {
+  return app.isPackaged
+    ? join(process.resourcesPath, "icon.png")
+    : join(__dirname, "../../resources/icon.png");
+}
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -16,6 +26,8 @@ function createWindow(): void {
     show: false,
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "default",
     backgroundColor: "#0b0d12",
+    icon: appIconPath(),
+    title: "Mirror",
     webPreferences: {
       preload: join(__dirname, "../preload/index.cjs"),
       contextIsolation: true,
@@ -48,8 +60,13 @@ function createWindow(): void {
 }
 
 void app.whenReady().then(() => {
-  const sessionManager = new SessionManager(createCaptureAdapter());
-  disposeIpc = registerSessionIpc(sessionManager);
+  if (process.platform === "darwin") app.dock?.setIcon(nativeImage.createFromPath(appIconPath()));
+  const dataDirectory = join(app.getPath("userData"), "mirror-data");
+  const settingsRepository = new LocalSettingsRepository(dataDirectory);
+  const sessionRepository = new LocalSessionRepository(dataDirectory);
+  const captureAdapter = createCaptureAdapter();
+  const sessionManager = new SessionManager(captureAdapter, sessionRepository);
+  disposeIpc = registerSessionIpc(sessionManager, settingsRepository, captureAdapter);
   createWindow();
 
   app.on("activate", () => {

@@ -1,7 +1,8 @@
 x-backend: &backend
   image: ${BACKEND_IMAGE:-mirror-backend}:${IMAGE_TAG:-latest}
   build:
-    context: .
+    context: ..
+    dockerfile: Dockerfile
   env_file:
     - ${BACKEND_ENV_FILE:-.env.production}
   restart: unless-stopped

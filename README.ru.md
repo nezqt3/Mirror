@@ -217,7 +217,7 @@ npm run dev
 
 Docker используется для воспроизводимой CI-проверки и сборки Electron bundle: `docker build -f apps/desktop/Dockerfile --target verify .`. Swift и C# Helpers по-прежнему собираются и подписываются на соответствующих целевых операционных системах.
 
-Также доступен Docker Compose: `docker compose build desktop-build` собирает образ с артефактами, а `docker compose --profile verify build desktop-verify` выполняет контейнерную проверку проекта.
+Всё приложение запускается из корня командой `npm run dev`, production-сборка — `npm run prod`. Отдельно доступны `npm run dev:backend`, `npm run dev:frontend`, `npm run prod:backend` и `npm run prod:frontend`. Перед production-запуском создайте и заполните `backend/.env.production`. Backend и production-сборка frontend работают через Docker; Electron GUI в dev запускается на хосте.
 
 ## Приватность по умолчанию
 

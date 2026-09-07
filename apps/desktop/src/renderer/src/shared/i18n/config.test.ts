@@ -8,6 +8,6 @@ describe("language configuration", () => {
   });
 
   it("uses the configured fallback for unknown locales", () => {
-    expect(resolveLanguage("ru-RU")).toBe(languageConfig.fallbackLanguage);
+    expect(resolveLanguage("xx-XX")).toBe(languageConfig.fallbackLanguage);
   });
 });

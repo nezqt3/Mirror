@@ -1,0 +1,13 @@
+name: mirror-prod
+
+include:
+  - backend/docker-compose.prod.yml
+
+services:
+  desktop-build:
+    image: mirror-desktop-build:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/desktop/Dockerfile
+      target: artifact
+    restart: "no"

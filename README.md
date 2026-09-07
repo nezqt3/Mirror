@@ -217,7 +217,7 @@ Windows 开发环境使用 `npm run build:native:windows` 构建 C# Helper。运
 
 Docker 可用于可重复的 CI 检查和 Electron bundle 构建：`docker build -f apps/desktop/Dockerfile --target verify .`。Swift 与 C# Helper 仍需在对应的目标操作系统上构建和签名。
 
-也可以通过 Docker Compose 构建：`docker compose build desktop-build`。使用 `docker compose --profile verify build desktop-verify` 运行容器化检查。
+在仓库根目录使用 `npm run dev` 启动完整开发环境，使用 `npm run prod` 构建并启动生产环境。也可分别运行 `npm run dev:backend`、`npm run dev:frontend`、`npm run prod:backend` 和 `npm run prod:frontend`。生产启动前需要创建并配置 `backend/.env.production`。Backend 和 production frontend 构建通过 Docker 运行；开发环境中的 Electron GUI 在宿主机上运行。
 
 ## 隐私保护
 

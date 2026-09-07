@@ -4,6 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from mirror.core.errors import AnalysisErrorCode
+
 
 class RewardsRead(BaseModel):
     xp: int = Field(ge=0)
@@ -39,7 +41,7 @@ class ReportPending(BaseModel):
 class ReportFailed(BaseModel):
     session_id: UUID
     status: Literal["failed"] = "failed"
-    error_code: str
+    error_code: AnalysisErrorCode
     can_retry: bool = True
 
 

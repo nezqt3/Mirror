@@ -3,9 +3,9 @@ from pathlib import Path
 from uuid import UUID
 
 import pytest
-from fastapi import HTTPException
 from pydantic import ValidationError
 
+from mirror.core.errors import ApiError, EventErrorCode
 from mirror.modules.events.model import EventType
 from mirror.modules.events.raw_schema import RawEventBatchCreate
 from mirror.modules.events.router import _raw_event_row, _validate_raw_batch
@@ -50,12 +50,14 @@ def test_quality_scenario_examples_are_valid(path: Path) -> None:
 def test_raw_batch_rejects_wrong_session_or_user() -> None:
     payload = RawEventBatchCreate.model_validate(_batch())
 
-    with pytest.raises(HTTPException, match="sessionId"):
+    with pytest.raises(ApiError) as session_error:
         _validate_raw_batch(payload, UUID(int=1), USER_ID)
+    assert session_error.value.code == EventErrorCode.EVENT_BATCH_SESSION_MISMATCH
 
-    with pytest.raises(HTTPException) as exc_info:
+    with pytest.raises(ApiError) as exc_info:
         _validate_raw_batch(payload, SESSION_ID, UUID(int=1))
     assert exc_info.value.status_code == 403
+    assert exc_info.value.code == EventErrorCode.EVENT_USER_MISMATCH
 
 
 def test_raw_batch_rejects_incognito_and_unknown_fields() -> None:
@@ -87,15 +89,16 @@ def test_raw_batch_rejects_invalid_timeline() -> None:
     received_at = datetime(2026, 9, 4, 14, 0, tzinfo=UTC)
 
     future_batch = payload.model_copy(update={"sent_at": received_at + timedelta(minutes=6)})
-    with pytest.raises(HTTPException, match="sentAt"):
+    with pytest.raises(ApiError) as future_error:
         _validate_raw_batch(
             future_batch,
             SESSION_ID,
             USER_ID,
             received_at=received_at,
         )
+    assert future_error.value.code == EventErrorCode.EVENT_BATCH_SENT_AT_TOO_FAR_FUTURE
 
-    with pytest.raises(HTTPException, match="before the session"):
+    with pytest.raises(ApiError) as timeline_error:
         _validate_raw_batch(
             payload,
             SESSION_ID,
@@ -103,6 +106,7 @@ def test_raw_batch_rejects_invalid_timeline() -> None:
             session_started_at=datetime(2026, 9, 4, 13, 6, tzinfo=UTC),
             received_at=received_at,
         )
+    assert timeline_error.value.code == EventErrorCode.EVENT_BEFORE_SESSION_START
 
 
 def _batch() -> dict[str, object]:

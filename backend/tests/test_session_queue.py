@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 import pytest
-from fastapi import HTTPException
 
+from mirror.core.errors import AnalysisErrorCode, ApiError
 from mirror.modules.sessions.model import FocusSession, SessionStatus
 from mirror.modules.sessions.router import _enqueue_analysis, analyze_session
 
@@ -27,10 +27,11 @@ async def test_enqueue_failure_marks_session_retryable(monkeypatch: pytest.Monke
         started_at=datetime.now(UTC),
     )
 
-    with pytest.raises(HTTPException) as exc_info:
+    with pytest.raises(ApiError) as exc_info:
         await _enqueue_analysis(item, db)
 
     assert exc_info.value.status_code == 503
+    assert exc_info.value.code == AnalysisErrorCode.ANALYSIS_QUEUE_UNAVAILABLE
     assert item.status == SessionStatus.FAILED
     assert item.analysis_error_code == "ANALYSIS_QUEUE_UNAVAILABLE"
     db.commit.assert_awaited_once()

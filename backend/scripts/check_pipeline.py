@@ -56,7 +56,7 @@ def run_pipeline() -> dict[str, object]:
 
         started_at = datetime.fromisoformat(session["started_at"].replace("Z", "+00:00"))
         batch = _raw_batch(session["id"], user["id"], started_at)
-        accepted = _post(client, f"/sessions/{session['id']}/events:batch", batch)
+        accepted = _post(client, f"/sessions/{session['id']}/events/batch", batch)
         if accepted != {"accepted": len(batch["events"]), "duplicates": 0}:
             raise RuntimeError(f"unexpected ingest response: {accepted}")
 

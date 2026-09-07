@@ -2,10 +2,11 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 from sqlalchemy.dialects.postgresql import insert
 
 from mirror.api.dependencies import CurrentUser, DbSession
+from mirror.core.errors import ApiError, EventErrorCode, SessionErrorCode
 from mirror.modules.events.model import ActivityEvent, EventType
 from mirror.modules.events.raw_schema import RawActivityEvent, RawEventBatchCreate
 from mirror.modules.events.schema import EventBatchAccepted
@@ -17,7 +18,7 @@ MAX_CLOCK_SKEW = timedelta(minutes=5)
 
 
 @router.post(
-    "/{session_id}/events:batch",
+    "/{session_id}/events/batch",
     response_model=EventBatchAccepted,
     status_code=status.HTTP_202_ACCEPTED,
 )
@@ -29,9 +30,9 @@ async def ingest_events(
 ) -> EventBatchAccepted:
     session = await get_owned_session(db, session_id, current_user.id)
     if not session:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise ApiError(status.HTTP_404_NOT_FOUND, SessionErrorCode.SESSION_NOT_FOUND)
     if session.status != SessionStatus.ACTIVE:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Session is not active")
+        raise ApiError(status.HTTP_409_CONFLICT, SessionErrorCode.SESSION_NOT_ACTIVE)
     _validate_raw_batch(
         payload,
         session_id,
@@ -60,35 +61,39 @@ def _validate_raw_batch(
 ) -> None:
     received_at = received_at or datetime.now(UTC)
     if payload.sent_at > received_at + MAX_CLOCK_SKEW:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="sentAt is too far in the future",
+        raise ApiError(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            EventErrorCode.EVENT_BATCH_SENT_AT_TOO_FAR_FUTURE,
         )
     if payload.session_id != session_id:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Batch sessionId must match the session ID in the URL",
+        raise ApiError(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            EventErrorCode.EVENT_BATCH_SESSION_MISMATCH,
         )
     for event in payload.events:
         if event.timestamp > payload.sent_at + MAX_CLOCK_SKEW:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"Event {event.event_id} occurs after sentAt",
+            raise ApiError(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                EventErrorCode.EVENT_AFTER_BATCH_SENT_AT,
+                details={"event_id": str(event.event_id)},
             )
         if session_started_at and event.timestamp < session_started_at - MAX_CLOCK_SKEW:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"Event {event.event_id} occurs before the session started",
+            raise ApiError(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                EventErrorCode.EVENT_BEFORE_SESSION_START,
+                details={"event_id": str(event.event_id)},
             )
         if event.session_id != session_id:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"Event {event.event_id} has a different sessionId",
+            raise ApiError(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                EventErrorCode.EVENT_SESSION_MISMATCH,
+                details={"event_id": str(event.event_id)},
             )
         if event.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Event {event.event_id} does not belong to the authenticated user",
+            raise ApiError(
+                status.HTTP_403_FORBIDDEN,
+                EventErrorCode.EVENT_USER_MISMATCH,
+                details={"event_id": str(event.event_id)},
             )
 
 

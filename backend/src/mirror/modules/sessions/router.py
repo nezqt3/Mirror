@@ -1,10 +1,11 @@
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Query, status
 from sqlalchemy import select
 
 from mirror.api.dependencies import CurrentUser, DbSession
+from mirror.core.errors import AnalysisErrorCode, ApiError, SessionErrorCode
 from mirror.modules.sessions.model import FocusSession, SessionStatus
 from mirror.modules.sessions.schema import SessionCreate, SessionFinish, SessionRead
 from mirror.modules.sessions.service import get_owned_session
@@ -30,7 +31,7 @@ async def create_session(
         )
     )
     if active:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Active session exists")
+        raise ApiError(status.HTTP_409_CONFLICT, SessionErrorCode.ACTIVE_SESSION_EXISTS)
     item = FocusSession(
         user_id=current_user.id,
         started_at=datetime.now(UTC),
@@ -83,7 +84,7 @@ async def read_current_session(
         )
     )
     if item is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No active session")
+        raise ApiError(status.HTTP_404_NOT_FOUND, SessionErrorCode.NO_ACTIVE_SESSION)
     await set_active_session_id(
         current_user.id,
         item.id,
@@ -96,7 +97,7 @@ async def read_current_session(
 async def read_session(session_id: UUID, db: DbSession, current_user: CurrentUser) -> FocusSession:
     item = await get_owned_session(db, session_id, current_user.id)
     if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise ApiError(status.HTTP_404_NOT_FOUND, SessionErrorCode.SESSION_NOT_FOUND)
     return item
 
 
@@ -106,20 +107,20 @@ async def finish_session(
 ) -> FocusSession:
     item = await get_owned_session(db, session_id, current_user.id)
     if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise ApiError(status.HTTP_404_NOT_FOUND, SessionErrorCode.SESSION_NOT_FOUND)
     if item.status != SessionStatus.ACTIVE:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Session is not active")
+        raise ApiError(status.HTTP_409_CONFLICT, SessionErrorCode.SESSION_NOT_ACTIVE)
     now = datetime.now(UTC)
     item.ended_at = payload.ended_at or now
     if item.ended_at < item.started_at:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Session end time cannot be before start time",
+        raise ApiError(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            SessionErrorCode.SESSION_END_BEFORE_START,
         )
     if item.ended_at > now + MAX_CLOCK_SKEW:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Session end time is too far in the future",
+        raise ApiError(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            SessionErrorCode.SESSION_END_TOO_FAR_FUTURE,
         )
     item.status = SessionStatus.PROCESSING
     item.analysis_error_code = None
@@ -132,7 +133,7 @@ async def finish_session(
 
 
 @router.post(
-    "/{session_id}/analysis:retry",
+    "/{session_id}/analysis/retry",
     response_model=SessionRead,
     status_code=status.HTTP_202_ACCEPTED,
 )
@@ -143,12 +144,9 @@ async def retry_session_analysis(
 ) -> FocusSession:
     item = await get_owned_session(db, session_id, current_user.id)
     if not item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise ApiError(status.HTTP_404_NOT_FOUND, SessionErrorCode.SESSION_NOT_FOUND)
     if item.status != SessionStatus.FAILED:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Only failed analysis can be retried",
-        )
+        raise ApiError(status.HTTP_409_CONFLICT, AnalysisErrorCode.ANALYSIS_NOT_RETRYABLE)
     item.status = SessionStatus.PROCESSING
     item.analysis_error_code = None
     item.analysis_error_message = None
@@ -163,10 +161,10 @@ async def _enqueue_analysis(item: FocusSession, db: DbSession) -> None:
         analyze_session.delay(str(item.id))
     except Exception as exc:
         item.status = SessionStatus.FAILED
-        item.analysis_error_code = "ANALYSIS_QUEUE_UNAVAILABLE"
+        item.analysis_error_code = AnalysisErrorCode.ANALYSIS_QUEUE_UNAVAILABLE.value
         item.analysis_error_message = "Session analysis could not be queued"
         await db.commit()
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Analysis queue is temporarily unavailable; retry the analysis later",
+        raise ApiError(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            AnalysisErrorCode.ANALYSIS_QUEUE_UNAVAILABLE,
         ) from exc

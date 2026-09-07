@@ -27,6 +27,22 @@ docker compose logs -f api worker
 ответа, а старый refresh сразу становится недействительным. `POST /api/v1/auth/logout` принимает
 refresh token и отзывает его. В базе хранится SHA-256 отпечаток, а не сам токен.
 
+Все ошибки API имеют единый формат:
+
+```json
+{
+  "error": {
+    "code": "SESSION_NOT_FOUND",
+    "message": "Session was not found",
+    "details": {}
+  }
+}
+```
+
+Коды разделены по доменным enum в `mirror.core.errors`. Клиент локализует ошибку по `code`;
+английский `message` предназначен только для логов и отладки, а параметры для шаблона передаются
+отдельно в `details`.
+
 В dev-compose API использует hot reload: изменения внутри `src/` подхватываются автоматически.
 Worker видит тот же актуальный `src/`, но Celery нужно перезапустить:
 
@@ -81,7 +97,7 @@ docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.
 2. `POST /api/v1/auth/login` → access/refresh tokens;
 3. `POST /api/v1/sessions` → старт Focus Session;
 4. `GET /api/v1/sessions/current` → текущая сессия через Redis с DB fallback;
-5. `POST /api/v1/sessions/{id}/events:batch` → пакет событий клиента;
+5. `POST /api/v1/sessions/{id}/events/batch` → пакет событий клиента;
 6. `POST /api/v1/sessions/{id}/finish` → постановка анализа в очередь;
 7. `GET /api/v1/sessions/{id}/report` → получение результата.
 

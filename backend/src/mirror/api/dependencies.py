@@ -2,10 +2,11 @@ from typing import Annotated
 from uuid import UUID
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from mirror.core.errors import ApiError, AuthErrorCode
 from mirror.core.security import decode_token
 from mirror.db.session import get_db
 from mirror.modules.users.model import User
@@ -18,9 +19,9 @@ async def get_current_user(
     db: DbSession,
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
 ) -> User:
-    unauthorized = HTTPException(
+    unauthorized = ApiError(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid or missing authentication token",
+        code=AuthErrorCode.AUTHENTICATION_REQUIRED,
         headers={"WWW-Authenticate": "Bearer"},
     )
     if credentials is None:

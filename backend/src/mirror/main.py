@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from mirror.api.router import api_router
 from mirror.core.config import get_settings
+from mirror.core.errors import install_error_handlers
 from mirror.core.logging import configure_logging
 from mirror.db.session import engine
 from mirror.services.active_sessions import close_active_session_cache
@@ -34,6 +35,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+install_error_handlers(app)
 app.include_router(api_router, prefix=settings.api_v1_prefix)
 
 

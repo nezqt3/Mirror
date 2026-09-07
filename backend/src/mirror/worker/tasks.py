@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import NullPool
 
 from mirror.core.config import get_settings
+from mirror.core.errors import AnalysisErrorCode
 from mirror.db import models as _models  # noqa: F401
 from mirror.modules.characters.model import Character
 from mirror.modules.characters.service import apply_daily_discipline
@@ -36,12 +37,12 @@ def analyze_session(task: Any, session_id: str) -> None:
     try:
         asyncio.run(_analyze_session(UUID(session_id)))
     except PermanentAnalyzerError as exc:
-        asyncio.run(_mark_failed(UUID(session_id), "AI_CONFIGURATION_ERROR"))
+        asyncio.run(_mark_failed(UUID(session_id), AnalysisErrorCode.AI_CONFIGURATION_ERROR))
         logger.error("session_analysis_permanent_failure", session_id=session_id, error=str(exc))
         raise
     except Exception as exc:
         if task.request.retries >= MAX_RETRIES:
-            asyncio.run(_mark_failed(UUID(session_id), "AI_PROVIDER_UNAVAILABLE"))
+            asyncio.run(_mark_failed(UUID(session_id), AnalysisErrorCode.AI_PROVIDER_UNAVAILABLE))
             logger.error("session_analysis_retries_exhausted", session_id=session_id)
             raise
         countdown = min(60, 2 ** (task.request.retries + 1))
@@ -149,7 +150,7 @@ def _local_session_date(session: FocusSession) -> date:
     return ended_at.astimezone(timezone).date()
 
 
-async def _mark_failed(session_id: UUID, error_code: str) -> None:
+async def _mark_failed(session_id: UUID, error_code: AnalysisErrorCode) -> None:
     settings = get_settings()
     worker_engine = create_async_engine(settings.database_url, poolclass=NullPool)
     worker_session = async_sessionmaker(worker_engine, expire_on_commit=False)
@@ -159,7 +160,7 @@ async def _mark_failed(session_id: UUID, error_code: str) -> None:
             if not session or session.status == SessionStatus.COMPLETED:
                 return
             session.status = SessionStatus.FAILED
-            session.analysis_error_code = error_code
+            session.analysis_error_code = error_code.value
             session.analysis_error_message = "Session analysis could not be completed"
             await db.commit()
     finally:

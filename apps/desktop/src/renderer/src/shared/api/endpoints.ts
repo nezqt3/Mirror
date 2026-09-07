@@ -16,8 +16,8 @@ export const API_ENDPOINTS = {
     current: "/sessions/current",
     byId: (sessionId: string) => `/sessions/${sessionId}`,
     finish: (sessionId: string) => `/sessions/${sessionId}/finish`,
-    retryAnalysis: (sessionId: string) => `/sessions/${sessionId}/analysis:retry`,
-    eventsBatch: (sessionId: string) => `/sessions/${sessionId}/events:batch`,
+    retryAnalysis: (sessionId: string) => `/sessions/${sessionId}/analysis/retry`,
+    eventsBatch: (sessionId: string) => `/sessions/${sessionId}/events/batch`,
     report: (sessionId: string) => `/sessions/${sessionId}/report`
   }
 } as const;

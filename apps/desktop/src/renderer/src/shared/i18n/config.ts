@@ -37,3 +37,7 @@ export function resolveLanguage(value?: string | null): LanguageCode {
     ? primaryLanguage
     : languageConfig.fallbackLanguage;
 }
+
+export function toAnalysisLocale(language: LanguageCode): "en" | "zh-CN" | "ru" {
+  return language === "zh" ? "zh-CN" : language;
+}

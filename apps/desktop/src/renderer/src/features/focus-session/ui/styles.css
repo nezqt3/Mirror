@@ -1,0 +1,274 @@
+.focus-page,
+.sessions-page {
+  width: min(1040px, 100%);
+  margin: 0 auto;
+  padding-top: 24px;
+}
+
+.focus-timer {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  min-height: 500px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.focus-timer__ambient {
+  position: absolute;
+  top: 40px;
+  width: 560px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(112, 77, 234, .24), rgba(69, 223, 160, .05) 42%, transparent 70%);
+  filter: blur(28px);
+  opacity: .65;
+  transition: opacity 500ms ease;
+}
+
+.focus-timer--active .focus-timer__ambient {
+  opacity: 1;
+  animation: focus-breathe 4s ease-in-out infinite;
+}
+
+.focus-timer__orbit {
+  position: relative;
+  display: grid;
+  width: 380px;
+  height: 380px;
+  place-items: center;
+}
+
+.focus-timer__ring {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  filter: drop-shadow(0 0 15px rgba(124, 99, 232, .28));
+  transform: rotate(-90deg);
+}
+
+.focus-timer__track,
+.focus-timer__progress {
+  fill: none;
+  stroke-width: 2;
+}
+
+.focus-timer__track {
+  stroke: rgba(255, 255, 255, .08);
+}
+
+.focus-timer__progress {
+  stroke: url("#focus-gradient");
+  stroke-linecap: round;
+  stroke-width: 4;
+  transition: stroke-dashoffset 900ms linear;
+}
+
+.focus-timer__orbit::before,
+.focus-timer__orbit::after {
+  position: absolute;
+  border: 1px solid rgba(143, 120, 245, .11);
+  border-radius: 50%;
+  content: "";
+}
+
+.focus-timer__orbit::before { inset: 22px; }
+.focus-timer__orbit::after { inset: 48px; border-color: rgba(69, 223, 160, .07); }
+
+.focus-timer__avatar {
+  position: absolute;
+  top: 43px;
+  transform: scale(.78);
+  transform-origin: top center;
+}
+
+.focus-timer__avatar .mirror-avatar {
+  width: 210px;
+  height: 245px;
+}
+
+.focus-timer__time {
+  position: absolute;
+  bottom: 45px;
+  z-index: 3;
+  display: grid;
+  min-width: 164px;
+  gap: 2px;
+  padding: 9px 18px 11px;
+  border: 1px solid rgba(161, 140, 248, .2);
+  border-radius: var(--ui-radius-pill);
+  background: rgba(9, 11, 17, .82);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .38), inset 0 1px rgba(255,255,255,.04);
+  backdrop-filter: blur(16px);
+}
+
+.focus-timer__time span {
+  color: var(--ui-color-text-faint);
+  font-size: var(--ui-font-size-2xs);
+  font-weight: var(--ui-font-weight-heavy);
+  letter-spacing: var(--ui-letter-spacing-caps);
+}
+
+.focus-timer__time strong {
+  color: #f4f0ff;
+  font-size: 32px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.045em;
+  line-height: 1;
+}
+
+.focus-timer__satellite {
+  position: absolute;
+  z-index: 4;
+  width: 7px;
+  height: 7px;
+  border: 2px solid #151820;
+  border-radius: 50%;
+  background: var(--ui-color-success);
+  box-shadow: 0 0 16px rgba(69, 223, 160, .75);
+}
+
+.focus-timer__satellite--one { top: 72px; right: 52px; }
+.focus-timer__satellite--two { bottom: 92px; left: 31px; width: 5px; height: 5px; background: var(--ui-color-violet-300); }
+
+.focus-timer--active .focus-timer__satellite--one { animation: focus-pulse 1.8s ease-in-out infinite; }
+
+.focus-timer__copy {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+  margin-top: -8px;
+}
+
+.focus-timer__presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ui-color-text-muted);
+  font-size: var(--ui-font-size-xs);
+  font-weight: var(--ui-font-weight-semibold);
+}
+
+.focus-timer__presence i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ui-color-success);
+  box-shadow: 0 0 12px rgba(69, 223, 160, .55);
+}
+
+.focus-timer__copy h1 {
+  margin: 10px 0 8px;
+  color: var(--ui-color-text);
+  font-size: clamp(28px, 4vw, 44px);
+  letter-spacing: -.045em;
+  line-height: 1.08;
+}
+
+.focus-timer__copy p {
+  margin: 0;
+  color: var(--ui-color-text-muted);
+  font-size: var(--ui-font-size-md);
+}
+
+.focus-console {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  padding: 20px;
+  border-color: rgba(143, 120, 245, .14);
+  background: linear-gradient(145deg, rgba(22, 24, 34, .92), rgba(13, 15, 22, .9));
+  box-shadow: 0 22px 70px rgba(0,0,0,.22);
+}
+
+.focus-console textarea.ui-input { min-height: 68px; resize: none; font-size: var(--ui-font-size-lg); }
+.focus-console--active textarea.ui-input { min-height: 42px; }
+.focus-console__actions { display: flex; align-items: flex-end; gap: 12px; }
+.focus-console__actions .ui-field { width: 125px; }
+.focus-console__actions .ui-button { min-width: 186px; }
+
+.focus-console__error {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--ui-color-danger);
+  font-size: var(--ui-font-size-sm);
+}
+
+.focus-signals,
+.history-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.focus-signals > div,
+.history-summary .ui-surface {
+  padding: 15px 18px;
+  border: 1px solid var(--ui-color-border-subtle);
+  border-radius: var(--ui-radius-lg);
+  background: rgba(255,255,255,.018);
+}
+
+.focus-signals span,
+.history-summary span { display: block; margin-bottom: 5px; color: var(--ui-color-text-faint); font-size: var(--ui-font-size-xs); }
+.focus-signals strong,
+.history-summary strong { font-size: var(--ui-font-size-lg); }
+.focus-signals__safe { color: var(--ui-color-success); }
+
+.feature-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 20px 0 30px;
+}
+
+.feature-header .ui-eyebrow { margin-bottom: 8px; }
+.feature-header .ui-text { max-width: 650px; margin-top: 12px; }
+.history-summary { margin-bottom: 16px; }
+.history-summary .ui-surface { background: linear-gradient(145deg, rgba(25,27,37,.7), rgba(14,16,23,.72)); }
+.history-summary strong { font-size: 25px; font-variant-numeric: tabular-nums; }
+
+.session-list { padding: 8px 20px; }
+.session-list__header { display: flex; align-items: center; justify-content: space-between; padding: 16px 4px; }
+.session-list__header > span { color: var(--ui-color-text-faint); font-size: var(--ui-font-size-2xs); font-weight: var(--ui-font-weight-heavy); letter-spacing: var(--ui-letter-spacing-caps); }
+.session-row { display: grid; grid-template-columns: 38px minmax(220px, 1fr) 110px 90px 90px; align-items: center; gap: 16px; padding: 16px 4px; border-top: 1px solid var(--ui-color-border-subtle); }
+.session-row__icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; color: var(--ui-color-violet-300); background: rgba(124,99,232,.1); }
+.session-row__goal { display: grid; gap: 4px; }
+.session-row__goal span,
+.session-row > div:not(.session-row__goal):not(.session-row__icon) span { display: block; margin-bottom: 3px; color: var(--ui-color-text-faint); font-size: var(--ui-font-size-2xs); }
+.session-row > div strong { font-size: var(--ui-font-size-sm); }
+.session-row__score { color: var(--ui-color-success); }
+
+@keyframes focus-breathe { 0%,100% { transform: scale(.96); } 50% { transform: scale(1.06); } }
+@keyframes focus-pulse { 0%,100% { opacity: .55; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.3); } }
+
+@media (max-width: 850px) {
+  .focus-console { grid-template-columns: 1fr; }
+  .focus-console__actions { justify-content: space-between; }
+  .session-row { grid-template-columns: 38px minmax(180px, 1fr) 90px 70px; }
+  .session-row > div:last-child { display: none; }
+}
+
+@media (max-width: 620px) {
+  .focus-timer { min-height: 460px; }
+  .focus-timer__orbit { width: 330px; height: 330px; transform: scale(.88); }
+  .focus-console__actions { align-items: stretch; flex-direction: column; }
+  .focus-console__actions .ui-field,
+  .focus-console__actions .ui-button { width: 100%; }
+  .focus-signals,
+  .history-summary { grid-template-columns: 1fr; }
+  .feature-header { flex-direction: column; }
+  .session-row { grid-template-columns: 36px 1fr 70px; }
+  .session-row > div:nth-last-child(-n+2) { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-timer__ambient,
+  .focus-timer__satellite,
+  .focus-timer__progress { animation: none; transition: none; }
+}

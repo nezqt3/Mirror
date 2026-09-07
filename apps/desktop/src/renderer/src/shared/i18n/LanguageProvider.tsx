@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode
 } from "react";
+import i18n from "i18next";
 import { isLanguageCode, languageConfig, type LanguageCode } from "./config";
 
 export interface LanguageContextValue {
@@ -35,6 +36,7 @@ export function LanguageProvider({ children }: LanguageProviderProps): React.JSX
 
   useEffect(() => {
     document.documentElement.lang = language;
+    void i18n.changeLanguage(language);
     try {
       window.localStorage.setItem(languageConfig.storageKey, language);
     } catch {

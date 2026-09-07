@@ -4,6 +4,7 @@ export {
   languageLabels,
   resolveLanguage,
   supportedLanguages,
+  toAnalysisLocale,
   type LanguageCode,
   type LanguageConfig
 } from "./config";

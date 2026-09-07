@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { captureEventSchema, characterSessionProgressSchema, focusSessionConfigSchema } from "./index";
+import {
+  captureEventSchema,
+  characterSessionProgressSchema,
+  focusSessionConfigSchema,
+  privacySettingsSchema,
+  toSessionCreatePayload
+} from "./index";
 
 describe("shared contracts", () => {
   it("accepts a valid focus-session configuration", () => {
@@ -12,7 +18,32 @@ describe("shared contracts", () => {
     ).toEqual({
       goal: "Finish the product pitch deck",
       durationMinutes: 90,
-      captureScreenshots: false
+      captureScreenshots: false,
+      analysisLocale: "en"
+    });
+  });
+
+  it("maps the desktop session config to the backend creation contract", () => {
+    expect(toSessionCreatePayload({
+      goal: "Finish presentation",
+      durationMinutes: 60,
+      captureScreenshots: false,
+      clientTimezone: "Asia/Shanghai",
+      analysisLocale: "zh-CN"
+    })).toEqual({
+      goal: "Finish presentation",
+      planned_duration_minutes: 60,
+      client_timezone: "Asia/Shanghai",
+      analysis_locale: "zh-CN"
+    });
+  });
+
+  it("normalizes missing privacy settings to safe defaults", () => {
+    expect(privacySettingsSchema.parse({})).toEqual({
+      blockedApplications: [],
+      blockedWindowTitleKeywords: [],
+      blockedDomains: [],
+      captureWindowTitles: true
     });
   });
 

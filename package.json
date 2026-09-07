@@ -1,6 +1,7 @@
 {
   "name": "mirror",
   "version": "0.1.0",
+  "productName": "Mirror",
   "private": true,
   "description": "Personal AI work intelligence desktop application",
   "workspaces": [

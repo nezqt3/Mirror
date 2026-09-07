@@ -1,0 +1,45 @@
+{
+  "header": {
+    "eyebrow": "PERSONAL PREFERENCES",
+    "title": "Settings",
+    "description": "Choose what Mirror may collect. These preferences stay on this Mac."
+  },
+  "language": {
+    "title": "Language",
+    "description": "Select the interface language."
+  },
+  "privacy": {
+    "title": "Capture exclusions",
+    "description": "One value per line. Matching apps, windows, and domains are discarded before local storage.",
+    "blockedApplications": {
+      "label": "Blocked applications",
+      "hint": "Select installed applications that Mirror must never capture.",
+      "placeholder": "Search applications",
+      "loading": "Loading applications…",
+      "empty": "No applications found.",
+      "selected": "Selected: {{count}}"
+    },
+    "blockedWindowTitles": {
+      "label": "Blocked window title keywords",
+      "hint": "A window is ignored when its title contains any listed phrase.",
+      "placeholder": "Private\nBanking"
+    },
+    "blockedDomains": {
+      "label": "Blocked domains",
+      "hint": "Used for browser events when browser integration is enabled. Subdomains are included.",
+      "placeholder": "example.com"
+    },
+    "captureWindowTitles": {
+      "label": "Collect window titles",
+      "description": "Turn this off to keep only application-level activity."
+    },
+    "save": "Save privacy settings",
+    "messages": {
+      "loadError": "Could not load local privacy settings.",
+      "applicationLoadError": "Could not load the installed application list.",
+      "restartRequired": "Restart Mirror to activate the updated desktop bridge.",
+      "saved": "Saved locally. New filters apply to the next focus session.",
+      "saveError": "Could not save privacy settings."
+    }
+  }
+}

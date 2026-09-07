@@ -1,0 +1,57 @@
+{
+  "navigation": {
+    "ariaLabel": "Main navigation",
+    "home": "Home",
+    "sessions": "Focus Sessions",
+    "insights": "Insights",
+    "character": "Mirror Character",
+    "settings": "Settings"
+  },
+  "sidebar": {
+    "workspace": "Personal workspace"
+  },
+  "topbar": {
+    "workspace": "WORKSPACE"
+  },
+  "status": {
+    "idle": "Idle",
+    "starting": "Starting",
+    "running": "Running",
+    "stopping": "Stopping",
+    "failed": "Failed"
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "YOUR NEXT FOCUS SESSION",
+      "title": "What will you finish?",
+      "description": "Set one clear outcome. Mirror will understand how the work unfolds."
+    },
+    "session": {
+      "timeRemaining": "TIME REMAINING",
+      "secondsRemaining": "{{seconds}} seconds remaining",
+      "goal": "Session goal",
+      "defaultGoal": "Finish the product presentation",
+      "duration": "Duration",
+      "minutes": "{{minutes}} min",
+      "finish": "Finish session",
+      "start": "Start focus session"
+    },
+    "metrics": {
+      "ariaLabel": "Live session signals",
+      "capturedSignals": "Captured signals",
+      "privacyMode": "Privacy mode",
+      "privacyOn": "On",
+      "timer": "Timer"
+    }
+  },
+  "empty": {
+    "eyebrow": "MIRROR WORKSPACE",
+    "description": "This space is ready for the next part of your Mirror experience."
+  },
+  "errors": {
+    "bridgeUnavailable": "Desktop bridge is unavailable. Restart Mirror from the Electron app.",
+    "bridgeUnavailableShort": "Desktop bridge is unavailable",
+    "readSession": "Unable to read session state",
+    "updateSession": "Unable to update the session"
+  }
+}

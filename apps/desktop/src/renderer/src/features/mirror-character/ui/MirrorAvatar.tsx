@@ -14,11 +14,14 @@ export function MirrorAvatar(): React.JSX.Element {
         <rect x="112" y="187" width="36" height="8" rx="4" fill="#b6a7ff" opacity=".6" />
         <path d="M75 80c0-37 24-61 55-61s55 24 55 61v36c0 33-24 56-55 56s-55-23-55-56Z" fill="#765ce0" />
         <path d="M86 82c0-27 18-44 44-44s44 17 44 44v31c0 26-19 43-44 43s-44-17-44-43Z" fill="#11141b" />
-        <path d="M98 103c10-8 20-12 32-12s22 4 32 12" fill="none" stroke="#8f78f5" strokeWidth="3" opacity=".45" />
+        <path className="mirror-avatar__brow mirror-avatar__brow--left" d="M101 96c6-4 13-5 20-2" fill="none" stroke="#a18cf8" strokeWidth="3" strokeLinecap="round" />
+        <path className="mirror-avatar__brow mirror-avatar__brow--right" d="M139 94c7-3 14-2 20 2" fill="none" stroke="#a18cf8" strokeWidth="3" strokeLinecap="round" />
         <circle cx="111" cy="111" r="6" fill="#b9fbea" />
         <circle cx="149" cy="111" r="6" fill="#b9fbea" />
         <circle cx="111" cy="111" r="12" fill="#45dfa0" opacity=".2" filter="url(#character-glow)" />
         <circle cx="149" cy="111" r="12" fill="#45dfa0" opacity=".2" filter="url(#character-glow)" />
+        <ellipse className="mirror-avatar__eyelid mirror-avatar__eyelid--left" cx="111" cy="111" rx="7" ry="7" fill="#11141b" />
+        <ellipse className="mirror-avatar__eyelid mirror-avatar__eyelid--right" cx="149" cy="111" rx="7" ry="7" fill="#11141b" />
         <path d="M118 135c8 4 16 4 24 0" fill="none" stroke="#a18cf8" strokeWidth="3" strokeLinecap="round" />
         <path d="M130 20V5m-8 1h16" fill="none" stroke="#a18cf8" strokeWidth="4" strokeLinecap="round" />
         <circle cx="130" cy="4" r="4" fill="#45dfa0" />

@@ -1,0 +1,45 @@
+{
+  "header": {
+    "eyebrow": "个人偏好",
+    "title": "设置",
+    "description": "选择 Mirror 可以收集哪些数据。这些设置仅保存在此 Mac 上。"
+  },
+  "language": {
+    "title": "语言",
+    "description": "选择界面语言。"
+  },
+  "privacy": {
+    "title": "采集排除项",
+    "description": "每行填写一个值。匹配的应用、窗口和域名会在本地存储之前被丢弃。",
+    "blockedApplications": {
+      "label": "已屏蔽的应用",
+      "hint": "选择 Mirror 永远不应采集的已安装应用。",
+      "placeholder": "搜索应用",
+      "loading": "正在加载应用…",
+      "empty": "未找到应用。",
+      "selected": "已选择：{{count}}"
+    },
+    "blockedWindowTitles": {
+      "label": "已屏蔽的窗口标题关键词",
+      "hint": "如果窗口标题包含任意已列出的短语，该窗口将被忽略。",
+      "placeholder": "隐私\n银行"
+    },
+    "blockedDomains": {
+      "label": "已屏蔽的域名",
+      "hint": "启用浏览器集成后用于浏览器事件。子域名也会被包含。",
+      "placeholder": "example.com"
+    },
+    "captureWindowTitles": {
+      "label": "采集窗口标题",
+      "description": "关闭后将仅保留应用级别的活动信息。"
+    },
+    "save": "保存隐私设置",
+    "messages": {
+      "loadError": "无法加载本地隐私设置。",
+      "applicationLoadError": "无法加载已安装应用列表。",
+      "restartRequired": "请重启 Mirror 以启用更新后的桌面桥接。",
+      "saved": "已保存到本地。新的过滤规则将在下一次专注会话中生效。",
+      "saveError": "无法保存隐私设置。"
+    }
+  }
+}

@@ -2,8 +2,10 @@ import { randomUUID } from "node:crypto";
 import type {
   CaptureEvent,
   FocusSessionConfig,
+  InstalledApplication,
   PermissionStatus,
-  Platform
+  Platform,
+  PrivacySettings
 } from "@mirror/contracts";
 import type { CaptureAdapter, CaptureEventHandler } from "./CaptureAdapter.js";
 
@@ -16,13 +18,18 @@ export class MockCaptureAdapter implements CaptureAdapter {
     return true;
   }
 
-  async getPermissionStatus(): Promise<PermissionStatus> {
+  async requestPermissions(): Promise<PermissionStatus> {
     return "granted";
+  }
+
+  async listApplications(): Promise<InstalledApplication[]> {
+    return [];
   }
 
   async start(
     sessionId: string,
     _config: FocusSessionConfig,
+    _privacy: PrivacySettings,
     onEvent: CaptureEventHandler
   ): Promise<void> {
     await this.stop();

@@ -80,6 +80,23 @@
   animation: character-float 4.5s ease-in-out infinite;
 }
 
+.mirror-avatar__eyelid {
+  transform: scaleY(0);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: character-blink 5.2s ease-in-out infinite;
+}
+
+.mirror-avatar__brow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: character-brow 6.4s ease-in-out infinite;
+}
+
+.mirror-avatar__brow--right {
+  animation-delay: 180ms;
+}
+
 .xp-burst {
   position: absolute;
   top: var(--ui-space-6);
@@ -99,6 +116,18 @@
 @keyframes character-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-7px); }
+}
+
+@keyframes character-blink {
+  0%, 42%, 46%, 70%, 74%, 100% { transform: scaleY(0); }
+  43.5%, 44.5%, 71.5%, 72.5% { transform: scaleY(1); }
+}
+
+@keyframes character-brow {
+  0%, 36%, 100% { transform: translateY(0) rotate(0); }
+  42% { transform: translateY(-2px) rotate(-2deg); }
+  49% { transform: translateY(1px) rotate(1deg); }
+  56% { transform: translateY(0) rotate(0); }
 }
 
 @keyframes xp-burst {
@@ -280,6 +309,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mirror-avatar svg,
+  .mirror-avatar__eyelid,
+  .mirror-avatar__brow,
   .xp-burst {
     animation: none;
   }

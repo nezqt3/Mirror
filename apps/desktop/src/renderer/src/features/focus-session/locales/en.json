@@ -1,0 +1,8 @@
+{
+  "hero": { "title": "Make this session count.", "description": "Choose one outcome. Miro will stay with you while Mirror quietly understands the work." },
+  "timer": { "ready": "READY FOR FOCUS", "remaining": "TIME REMAINING", "characterReady": "Miro is ready", "characterActive": "Miro is protecting your focus", "activeDescription": "Stay with the outcome. Everything permitted is captured locally and privately." },
+  "session": { "goal": "Session goal", "defaultGoal": "Finish the product presentation", "duration": "Duration", "minutes": "{{minutes}} min", "start": "Enter focus mode", "finish": "Finish session" },
+  "signals": { "ariaLabel": "Live focus signals", "captured": "Captured signals", "privacy": "Privacy shield", "protected": "Protected", "character": "Mirror Character", "withYou": "In session", "ready": "Ready" },
+  "errors": { "bridgeUnavailable": "Desktop bridge is unavailable. Restart Mirror.", "readSession": "Unable to read session state.", "updateSession": "Unable to update the session.", "permissions": "Grant Accessibility and Screen Recording access in System Settings, then start again." },
+  "history": { "eyebrow": "YOUR FOCUS HISTORY", "title": "Focus sessions", "description": "A calm record of deliberate work and the patterns behind it.", "localData": "Local data", "totalTime": "Focused time", "averageFocus": "Average focus", "sessions": "Sessions", "recent": "Recent sessions", "mockLabel": "PREVIEW DATA", "duration": "Duration", "focusScore": "Focus", "switches": "Switches" }
+}

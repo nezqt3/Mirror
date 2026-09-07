@@ -1,0 +1,8 @@
+{
+  "hero": { "title": "让这次专注真正有价值。", "description": "选择一个成果。Mirror 安静理解工作时，Miro 会一直陪着你。" },
+  "timer": { "ready": "准备专注", "remaining": "剩余时间", "characterReady": "Miro 已准备好", "characterActive": "Miro 正在守护你的专注", "activeDescription": "专注于成果。所有获准数据仅在本地私密保存。" },
+  "session": { "goal": "会话目标", "defaultGoal": "完成产品演示文稿", "duration": "时长", "minutes": "{{minutes}} 分钟", "start": "进入专注模式", "finish": "结束会话" },
+  "signals": { "ariaLabel": "实时专注信号", "captured": "已采集信号", "privacy": "隐私保护", "protected": "已保护", "character": "Mirror 角色", "withYou": "会话中", "ready": "准备就绪" },
+  "errors": { "bridgeUnavailable": "桌面桥接不可用。请重启 Mirror。", "readSession": "无法读取会话状态。", "updateSession": "无法更新会话。", "permissions": "请在系统设置中授予辅助功能和屏幕录制权限，然后重新开始。" },
+  "history": { "eyebrow": "你的专注历史", "title": "专注会话", "description": "记录每一次有意识的工作以及背后的模式。", "localData": "本地数据", "totalTime": "专注时间", "averageFocus": "平均专注", "sessions": "会话", "recent": "最近会话", "mockLabel": "预览数据", "duration": "时长", "focusScore": "专注", "switches": "切换" }
+}

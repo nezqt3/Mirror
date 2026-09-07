@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import "./i18n";
 import { LanguageProvider } from "./shared/i18n";
 import "./shared/ui/styles/index.css";
 import "./styles.css";

@@ -1,0 +1,49 @@
+{
+  "header": {
+    "eyebrow": "让你的成长清晰可见",
+    "title": "Mirror 角色",
+    "description": "每一次专注都会塑造你的角色成长。",
+    "baseCharacter": "基础角色"
+  },
+  "identity": {
+    "level": "{{level}} 级",
+    "description": "陪伴你进行专注且有意识工作的稳定伙伴。",
+    "progressToLevel": "距离 {{level}} 级的进度",
+    "xpAriaLabel": "{{current}} / {{required}} XP"
+  },
+  "stats": {
+    "eyebrow": "核心特质",
+    "title": "当前属性",
+    "items": {
+      "focus": {
+        "label": "专注",
+        "description": "保持注意力集中在当前任务上的能力。"
+      },
+      "stamina": {
+        "label": "耐力",
+        "description": "长时间维持高效工作的能力。"
+      },
+      "execution": {
+        "label": "执行力",
+        "description": "将计划和意图转化为实际成果的能力。"
+      },
+      "discipline": {
+        "label": "自律",
+        "description": "持续保持专注并坚持完成目标的能力。"
+      }
+    }
+  },
+  "session": {
+    "eyebrow": "上一次专注会话",
+    "title": "前后对比",
+    "xpEarned": "获得 +{{xp}} XP",
+    "replayXp": "重播 XP",
+    "table": {
+      "ariaLabel": "上一次会话前后的角色属性",
+      "attribute": "属性",
+      "before": "之前",
+      "after": "之后",
+      "change": "变化"
+    }
+  }
+}

@@ -4,6 +4,10 @@
   padding: var(--ui-space-10) 0 var(--ui-space-6);
 }
 
+.character-state { display: grid; min-height: 560px; place-items: center; }
+.character-state__card { display: grid; width: min(100%, 480px); gap: var(--ui-space-4); padding: var(--ui-space-8); }
+.character-setup-form { display: grid; gap: var(--ui-space-5); margin-top: var(--ui-space-2); }
+
 .character-page__header,
 .character-section-heading,
 .session-growth__actions,

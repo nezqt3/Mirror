@@ -13,6 +13,35 @@
   "topbar": {
     "workspace": "工作区"
   },
+  "auth": {
+    "login": {
+      "title": "欢迎回来",
+      "description": "登录以继续使用 Mirror。",
+      "submit": "登录",
+      "switch": "还没有账户？注册"
+    },
+    "register": {
+      "title": "创建账户",
+      "description": "开始记录您的专注工作历程。",
+      "submit": "创建账户",
+      "switch": "已有账户？登录"
+    },
+    "fields": {
+      "name": "姓名",
+      "email": "邮箱",
+      "password": "密码",
+      "passwordHint": "至少 8 个字符"
+    },
+    "errors": {
+      "network": "无法连接服务器，请检查后端是否运行。",
+      "credentials": "邮箱或密码错误。",
+      "exists": "此邮箱已注册账户。",
+      "validation": "请检查填写的字段。",
+      "unknown": "出现错误，请重试。"
+    },
+    "logout": "退出登录",
+    "language": "界面语言"
+  },
   "status": {
     "idle": "空闲",
     "starting": "正在启动",

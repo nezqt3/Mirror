@@ -25,7 +25,7 @@ import "./styles.css";
 
 export interface MirrorCharacterPageProps {
   character: MirrorCharacter;
-  latestProgress: CharacterSessionProgress;
+  latestProgress?: CharacterSessionProgress;
 }
 
 const statIcons: Record<CharacterStatKey, IconName> = {
@@ -44,8 +44,9 @@ export function MirrorCharacterPage({
   const [animationRun, setAnimationRun] = useState(0);
   const [showResult, setShowResult] = useState(false);
 
-  const beforeProgress = getXpProgress(latestProgress.before);
-  const afterProgress = getXpProgress(latestProgress.after);
+  const currentProgress = Math.min(100, (character.xp.current / character.xp.required) * 100);
+  const beforeProgress = latestProgress ? getXpProgress(latestProgress.before) : currentProgress;
+  const afterProgress = latestProgress ? getXpProgress(latestProgress.after) : currentProgress;
 
   useEffect(() => {
     setShowResult(false);
@@ -75,9 +76,11 @@ export function MirrorCharacterPage({
       <div className="character-overview">
         <Surface className="character-identity">
           <div className="character-identity__visual">
-            <div key={animationRun} className="xp-burst" aria-live="polite">
-              +{latestProgress.xpGained} XP
-            </div>
+            {latestProgress && (
+              <div key={animationRun} className="xp-burst" aria-live="polite">
+                +{latestProgress.xpGained} XP
+              </div>
+            )}
 
             <MirrorAvatar />
           </div>
@@ -190,7 +193,7 @@ export function MirrorCharacterPage({
         </section>
       </div>
 
-      <Surface as="section" variant="raised" className="session-growth">
+      {latestProgress && <Surface as="section" variant="raised" className="session-growth">
         <div className="character-section-heading">
           <div>
             <Eyebrow>{t("session.eyebrow")}</Eyebrow>
@@ -265,7 +268,7 @@ export function MirrorCharacterPage({
             );
           })}
         </div>
-      </Surface>
+      </Surface>}
     </div>
   );
 }

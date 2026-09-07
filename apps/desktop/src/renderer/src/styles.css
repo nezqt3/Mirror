@@ -15,6 +15,10 @@
 .sidebar-footer div { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
 .sidebar-footer strong { font-size: var(--ui-font-size-sm); }
 .sidebar-footer div span { overflow: hidden; color: var(--ui-color-text-faint); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar-logout { margin-left: auto; padding: 4px; border: 0; color: var(--ui-color-danger); background: none; cursor: pointer; font: inherit; font-size: 10px; }
+.sidebar-logout:hover { color: #ffa0aa; }
+.auth-loading { display: grid; min-height: 100vh; place-items: center; }
+.auth-loading span { width: 28px; height: 28px; border: 2px solid var(--ui-color-border); border-right-color: var(--ui-color-accent); border-radius: 50%; animation: ui-spin 700ms linear infinite; }
 .workspace { min-width: 0; padding: 8px var(--ui-space-12) 52px; }
 .topbar { height: 74px; justify-content: space-between; border-bottom: 1px solid var(--ui-color-border-subtle); }
 .topbar > div:first-child { display: flex; align-items: baseline; gap: 10px; }
@@ -28,6 +32,7 @@
   .brand-name,
   .nav-item > span,
   .sidebar-footer div { display: none; }
+  .sidebar-logout { display: none; }
   .nav-item.ui-button { justify-content: center; padding-inline: 0; }
   .sidebar-footer { justify-content: center; padding-inline: 0; }
   .workspace { padding-inline: var(--ui-space-6); }

@@ -67,7 +67,7 @@ services:
       POSTGRES_USER: mirror
       POSTGRES_PASSWORD: mirror
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - mirror_postgres_data:/var/lib/postgresql/data
     healthcheck:

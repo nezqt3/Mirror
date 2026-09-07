@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     access_token_ttl_minutes: int = 30
     refresh_token_ttl_days: int = 30
 
-    database_url: str = "postgresql+asyncpg://mirror:mirror@localhost:5432/mirror"
+    database_url: str = "postgresql+asyncpg://mirror:mirror@localhost:5433/mirror"
     redis_url: str = "redis://localhost:6379/0"
 
     s3_endpoint_url: str | None = "http://localhost:9000"
@@ -32,7 +32,14 @@ class Settings(BaseSettings):
     ai_reasoning_effort: Literal["low", "medium", "high"] = "medium"
     ai_timeout_seconds: int = Field(default=60, ge=5, le=240)
     ai_max_completion_tokens: int = Field(default=1600, ge=256, le=8192)
-    allowed_origins: list[str] = Field(default_factory=lambda: ["http://localhost:1420"])
+    allowed_origins: list[str] = Field(
+        default_factory=lambda: [
+            "http://localhost:1420",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "null",
+        ]
+    )
 
     @field_validator("secret_key")
     @classmethod

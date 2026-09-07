@@ -45,5 +45,17 @@
       "after": "之后",
       "change": "变化"
     }
+  },
+  "state": {
+    "loading": "正在加载角色…",
+    "errorTitle": "无法加载角色",
+    "retry": "重试"
+  },
+  "setup": {
+    "eyebrow": "你的角色",
+    "title": "创建 Mirror 角色",
+    "description": "每次完成专注会话后，角色都会成长。",
+    "name": "角色名称",
+    "submit": "创建角色"
   }
 }

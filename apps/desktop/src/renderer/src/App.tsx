@@ -1,15 +1,14 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AnalyticsPage } from "./features/analytics";
+import { AuthPage, useAuth, type User } from "./features/auth";
 import {
   FocusSessionPage,
   SessionsPage,
   useFocusSession
 } from "./features/focus-session";
 import {
-  baseMirrorCharacter,
-  characterSessionProgress,
-  MirrorCharacterPage
+  CharacterPageContainer
 } from "./features/mirror-character";
 import { SettingsPage } from "./features/settings";
 import { Badge, Button, type BadgeTone, type IconName } from "./shared/ui";
@@ -26,6 +25,25 @@ const navigation: Array<{ id: View; icon: IconName }> = [
 ];
 
 export function App(): React.JSX.Element {
+  const auth = useAuth();
+
+  if (auth.isLoading) {
+    return <main className="auth-loading" aria-label="Loading"><span /></main>;
+  }
+
+  if (!auth.user) {
+    return <AuthPage onLogin={auth.login} onRegister={auth.register} />;
+  }
+
+  return <Workspace user={auth.user} onLogout={auth.logout} />;
+}
+
+interface WorkspaceProps {
+  user: User;
+  onLogout: () => Promise<void>;
+}
+
+function Workspace({ user, onLogout }: WorkspaceProps): React.JSX.Element {
   const { t } = useTranslation("app");
   const [activeView, setActiveView] = useState<View>("home");
   const focus = useFocusSession();
@@ -41,6 +59,12 @@ export function App(): React.JSX.Element {
       : ["starting", "stopping"].includes(focus.session.status)
         ? "warning"
         : "neutral";
+  const initials = user.display_name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || user.email[0]?.toUpperCase() || "M";
 
   return (
     <main className="app-shell">
@@ -72,8 +96,11 @@ export function App(): React.JSX.Element {
         </nav>
 
         <div className="sidebar-footer">
-          <span className="avatar">DA</span>
-          <div><strong>Denis</strong><span>{t("sidebar.workspace")}</span></div>
+          <span className="avatar">{initials}</span>
+          <div><strong>{user.display_name}</strong><span>{user.email}</span></div>
+          <button className="sidebar-logout" type="button" onClick={() => void onLogout()} title={t("auth.logout")}>
+            {t("auth.logout")}
+          </button>
         </div>
       </aside>
 
@@ -93,10 +120,7 @@ export function App(): React.JSX.Element {
         ) : activeView === "insights" ? (
           <AnalyticsPage />
         ) : activeView === "character" ? (
-          <MirrorCharacterPage
-            character={baseMirrorCharacter}
-            latestProgress={characterSessionProgress}
-          />
+          <CharacterPageContainer />
         ) : (
           <SettingsPage />
         )}

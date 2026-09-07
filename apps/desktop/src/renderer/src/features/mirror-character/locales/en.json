@@ -45,5 +45,17 @@
       "after": "After",
       "change": "Change"
     }
+  },
+  "state": {
+    "loading": "Loading your character…",
+    "errorTitle": "Unable to load character",
+    "retry": "Try again"
+  },
+  "setup": {
+    "eyebrow": "YOUR CHARACTER",
+    "title": "Create your Mirror character",
+    "description": "It will grow after every completed focus session.",
+    "name": "Character name",
+    "submit": "Create character"
   }
 }

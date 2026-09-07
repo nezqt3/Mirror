@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import Date, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -27,6 +28,9 @@ class Character(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     stamina: Mapped[int] = mapped_column(Integer, default=1)
     execution: Mapped[int] = mapped_column(Integer, default=1)
     discipline: Mapped[int] = mapped_column(Integer, default=1)
+    current_streak: Mapped[int] = mapped_column(Integer, default=0)
+    longest_streak: Mapped[int] = mapped_column(Integer, default=0)
+    last_session_date: Mapped[date | None] = mapped_column(Date)
     adaptability: Mapped[int] = mapped_column(Integer, default=1)
     energy: Mapped[int] = mapped_column(Integer, default=100)
 

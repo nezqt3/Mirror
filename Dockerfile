@@ -7,11 +7,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 RUN addgroup --system mirror && adduser --system --ingroup mirror mirror
-COPY pyproject.toml ./
-COPY src ./src
-RUN pip install --no-cache-dir .
+COPY backend/pyproject.toml ./
+COPY backend/src ./src
+RUN --mount=type=cache,target=/root/.cache/pip pip install .
+
+COPY backend/alembic.ini ./
+COPY backend/alembic ./alembic
+COPY backend/scripts ./scripts
+COPY backend/examples ./examples
 
 USER mirror
 EXPOSE 8000
 CMD ["uvicorn", "mirror.main:app", "--host", "0.0.0.0", "--port", "8000"]
-

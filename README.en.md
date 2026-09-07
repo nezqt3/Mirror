@@ -217,7 +217,7 @@ On Windows, build the C# Helper with `npm run build:native:windows`. Run `npm ru
 
 Docker provides reproducible CI verification and Electron bundle builds: `docker build -f apps/desktop/Dockerfile --target verify .`. Swift and C# Helpers are still built and signed on their target operating systems.
 
-Docker Compose is also available: run `docker compose build desktop-build` for the artifact image or `docker compose --profile verify build desktop-verify` for containerized verification.
+Start the complete application from the repository root with `npm run dev`, or build and start production with `npm run prod`. Separate commands are available as `npm run dev:backend`, `npm run dev:frontend`, `npm run prod:backend`, and `npm run prod:frontend`. Create and configure `backend/.env.production` before a production start. The backend and production frontend build run through Docker; the Electron GUI runs on the host in development.
 
 ## Privacy by design
 

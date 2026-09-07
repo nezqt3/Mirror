@@ -9,7 +9,14 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run build -w @mirror/contracts && npm run dev -w @mirror/desktop",
+    "dev": "npm run dev:backend && npm run dev:frontend",
+    "dev:backend": "docker compose up -d --build",
+    "dev:frontend": "npm install && npm run build -w @mirror/contracts && npm run dev -w @mirror/desktop",
+    "dev:down": "docker compose down",
+    "prod": "docker compose --env-file backend/.env.production -f docker-compose.prod.yml up -d --build",
+    "prod:backend": "docker compose --env-file backend/.env.production -f docker-compose.prod.yml up -d --build api worker minio",
+    "prod:frontend": "docker build -f apps/desktop/Dockerfile --target artifact -t mirror-desktop-build:latest .",
+    "prod:down": "docker compose --env-file backend/.env.production -f docker-compose.prod.yml down",
     "build": "npm run build -w @mirror/contracts && npm run build -w @mirror/desktop",
     "typecheck": "npm run build -w @mirror/contracts && npm run typecheck --workspaces --if-present",
     "test": "npm run build -w @mirror/contracts && npm run test --workspaces --if-present",

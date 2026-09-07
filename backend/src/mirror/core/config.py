@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -24,9 +25,13 @@ class Settings(BaseSettings):
     s3_bucket: str = "mirror-private"
     s3_region: str = "us-east-1"
 
-    ai_provider_url: str | None = None
+    ai_enabled: bool = False
+    ai_provider_url: str = "https://api.groq.com/openai/v1"
     ai_api_key: SecretStr | None = None
-    ai_model: str | None = None
+    ai_model: str = "openai/gpt-oss-120b"
+    ai_reasoning_effort: Literal["low", "medium", "high"] = "medium"
+    ai_timeout_seconds: int = Field(default=60, ge=5, le=240)
+    ai_max_completion_tokens: int = Field(default=1600, ge=256, le=8192)
     allowed_origins: list[str] = Field(default_factory=lambda: ["http://localhost:1420"])
 
     @field_validator("secret_key")
@@ -34,6 +39,13 @@ class Settings(BaseSettings):
     def validate_secret_key(cls, value: SecretStr) -> SecretStr:
         if len(value.get_secret_value()) < 32:
             raise ValueError("SECRET_KEY must contain at least 32 characters")
+        return value
+
+    @field_validator("ai_api_key")
+    @classmethod
+    def normalize_ai_api_key(cls, value: SecretStr | None) -> SecretStr | None:
+        if value is None or not value.get_secret_value().strip():
+            return None
         return value
 
 

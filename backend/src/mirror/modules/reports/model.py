@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import Float, ForeignKey, Integer, Text
@@ -20,14 +20,15 @@ class SessionReport(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     session_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("focus_sessions.id", ondelete="CASCADE"), unique=True
     )
-    goal_completion: Mapped[float] = mapped_column(Float)
+    goal_completion: Mapped[float | None] = mapped_column(Float)
     focus_score: Mapped[int] = mapped_column(Integer)
     deep_work_minutes: Mapped[int] = mapped_column(Integer)
     context_switches: Mapped[int] = mapped_column(Integer)
-    bottlenecks: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
-    distractions: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    main_bottleneck: Mapped[str | None] = mapped_column(Text)
+    distractions: Mapped[list[str]] = mapped_column(JSONB, default=list)
     insights: Mapped[list[str]] = mapped_column(JSONB, default=list)
-    next_session_advice: Mapped[str] = mapped_column(Text)
+    next_session_advice: Mapped[str | None] = mapped_column(Text)
+    rewards: Mapped[dict[str, int]] = mapped_column(JSONB, default=dict)
     model_name: Mapped[str | None]
 
     session: Mapped[FocusSession] = relationship(back_populates="report")

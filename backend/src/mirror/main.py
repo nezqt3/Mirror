@@ -8,6 +8,7 @@ from mirror.api.router import api_router
 from mirror.core.config import get_settings
 from mirror.core.logging import configure_logging
 from mirror.db.session import engine
+from mirror.services.active_sessions import close_active_session_cache
 
 settings = get_settings()
 configure_logging(settings.debug)
@@ -16,6 +17,7 @@ configure_logging(settings.debug)
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     yield
+    await close_active_session_cache()
     await engine.dispose()
 
 

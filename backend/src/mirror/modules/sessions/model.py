@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -26,12 +26,19 @@ class SessionStatus(StrEnum):
 
 class FocusSession(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "focus_sessions"
+    __table_args__ = (
+        CheckConstraint(
+            "analysis_locale IN ('en', 'zh-CN')",
+            name="ck_focus_sessions_analysis_locale",
+        ),
+    )
 
     user_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     goal: Mapped[str] = mapped_column(Text)
     planned_duration_minutes: Mapped[int] = mapped_column(Integer)
+    analysis_locale: Mapped[str] = mapped_column(String(10), default="en")
     status: Mapped[SessionStatus] = mapped_column(
         Enum(SessionStatus, name="session_status", native_enum=False),
         default=SessionStatus.ACTIVE,
@@ -40,6 +47,8 @@ class FocusSession(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     client_timezone: Mapped[str] = mapped_column(String(64), default="UTC")
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    analysis_error_code: Mapped[str | None] = mapped_column(String(80))
+    analysis_error_message: Mapped[str | None] = mapped_column(Text)
 
     user: Mapped[User] = relationship(back_populates="sessions")
     events: Mapped[list[ActivityEvent]] = relationship(

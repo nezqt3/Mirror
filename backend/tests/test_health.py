@@ -18,4 +18,5 @@ def test_openapi_contains_mvp_endpoints() -> None:
     assert "/api/v1/sessions" in paths
     assert "/api/v1/sessions/{session_id}/events/batch" in paths
     assert "/api/v1/sessions/{session_id}/report" in paths
+    assert "/api/v1/sessions/history" in paths
     assert "/api/v1/sessions/{session_id}/analysis/retry" in paths

@@ -64,6 +64,15 @@ def run_pipeline() -> dict[str, object]:
         if redis_client.get(active_key) is not None:
             raise RuntimeError("active-session Redis key was not cleared after finish")
         report = _wait_for_report(client, session["id"])
+        history = _get_list(client, "/sessions/history?limit=100&offset=0")
+        history_item = next((item for item in history if item["id"] == session["id"]), None)
+        if history_item is None:
+            raise RuntimeError("completed session was not returned by session history")
+        summary = history_item.get("report_summary")
+        if not isinstance(summary, dict) or summary.get("status") != "completed":
+            raise RuntimeError("session history did not return the completed report summary")
+        if summary.get("focus_score") != report.get("focus_score"):
+            raise RuntimeError("session history summary does not match the completed report")
 
     return report
 
@@ -133,6 +142,12 @@ def _post(client: httpx.Client, path: str, payload: object) -> dict[str, object]
 
 
 def _get(client: httpx.Client, path: str) -> dict[str, object]:
+    response = client.get(path)
+    response.raise_for_status()
+    return response.json()
+
+
+def _get_list(client: httpx.Client, path: str) -> list[dict[str, object]]:
     response = client.get(path)
     response.raise_for_status()
     return response.json()

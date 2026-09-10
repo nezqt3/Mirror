@@ -99,7 +99,8 @@ docker compose -p mirror-prod --env-file .env.production -f docker-compose.prod.
 4. `GET /api/v1/sessions/current` → текущая сессия через Redis с DB fallback;
 5. `POST /api/v1/sessions/{id}/events/batch` → пакет событий клиента;
 6. `POST /api/v1/sessions/{id}/finish` → постановка анализа в очередь;
-7. `GET /api/v1/sessions/{id}/report` → получение результата.
+7. `GET /api/v1/sessions/history` → список сессий с кратким статусом отчёта.
+8. `GET /api/v1/sessions/{id}/report` → получение полного результата.
 
 Production batch соответствует `packages/contracts/src/raw-activity.ts`: верхний объект содержит
 `schemaVersion`, `sessionId`, `sentAt` и `events`. Backend строго проверяет данные каждого

@@ -1,5 +1,6 @@
 {
-  "header": { "eyebrow": "工作模式", "title": "分析", "description": "了解注意力在哪里形成动力，又在哪里悄悄流失。", "mockData": "预览数据" },
+  "header": { "eyebrow": "工作模式", "title": "分析", "description": "了解注意力在哪里形成动力，又在哪里悄悄流失。", "serverData": "同步数据" },
+  "state": { "loading": "正在加载分析…", "noAdvice": "完成一次会话以获取个性化建议。" },
   "score": { "eyebrow": "本周", "title": "专注节奏良好", "description": "最好的会话通常发生在第一次重要上下文切换之前。", "trend": "比上周提高 8 分" },
   "weekly": { "eyebrow": "深度工作", "title": "每周节奏", "ariaLabel": "每日深度工作分钟数" },
   "days": { "mon": "一", "tue": "二", "wed": "三", "thu": "四", "fri": "五", "sat": "六", "sun": "日" },

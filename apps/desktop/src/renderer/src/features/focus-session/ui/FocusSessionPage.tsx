@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Field, Icon, Select, Surface, Textarea } from "../../../shared/ui";
+import { Button, Field, Icon, Input, Surface, Textarea } from "../../../shared/ui";
 import type { FocusSessionController } from "../model/useFocusSession";
 import { FocusTimerHero } from "./FocusTimerHero";
 import "./styles.css";
@@ -11,6 +12,11 @@ export interface FocusSessionPageProps {
 export function FocusSessionPage({ controller }: FocusSessionPageProps): React.JSX.Element {
   const { t } = useTranslation("focus");
   const { session, isActive } = controller;
+  const [durationInput, setDurationInput] = useState(() => String(controller.durationMinutes));
+  const parsedDuration = Number(durationInput);
+  const durationIsValid = Number.isInteger(parsedDuration)
+    && parsedDuration >= 5
+    && parsedDuration <= 480;
 
   return (
     <div className="focus-page">
@@ -33,17 +39,34 @@ export function FocusSessionPage({ controller }: FocusSessionPageProps): React.J
           />
         </Field>
         <div className="focus-console__actions">
-          <Field label={t("session.duration")} htmlFor="focus-duration">
-            <Select
+          <Field
+            label={t("session.duration")}
+            htmlFor="focus-duration"
+            hint={t("session.customDurationHint")}
+            error={!durationIsValid ? t("session.customDurationError") : undefined}
+          >
+            <Input
               id="focus-duration"
-              value={controller.durationMinutes}
-              onChange={(event) => controller.setDurationMinutes(Number(event.target.value))}
+              type="number"
+              min={5}
+              max={480}
+              step={1}
+              list="focus-duration-presets"
+              value={durationInput}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                setDurationInput(nextValue);
+                const nextDuration = Number(nextValue);
+                if (Number.isInteger(nextDuration)) controller.setDurationMinutes(nextDuration);
+              }}
               disabled={isActive}
-            >
+              aria-invalid={!durationIsValid || undefined}
+            />
+            <datalist id="focus-duration-presets">
               {controller.durations.map((minutes) => (
-                <option key={minutes} value={minutes}>{t("session.minutes", { minutes })}</option>
+                <option key={minutes} value={minutes} label={t("session.minutes", { minutes })} />
               ))}
-            </Select>
+            </datalist>
           </Field>
           <Button
             type="button"
@@ -52,7 +75,7 @@ export function FocusSessionPage({ controller }: FocusSessionPageProps): React.J
             icon={session.status === "running" ? "stop" : "play"}
             loading={session.status === "starting" || session.status === "stopping"}
             onClick={() => void controller.toggle()}
-            disabled={!window.mirror}
+            disabled={!window.mirror || (!isActive && !durationIsValid)}
           >
             {session.status === "running" ? t("session.finish") : t("session.start")}
           </Button>

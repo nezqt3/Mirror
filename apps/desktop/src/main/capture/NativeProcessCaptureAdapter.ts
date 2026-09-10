@@ -81,7 +81,11 @@ export class NativeProcessCaptureAdapter implements CaptureAdapter {
 
         const permission = parsed.data.permissions ?? "unknown";
         cleanup();
-        resolve(permission);
+        // The current native helpers can still capture the foreground application
+        // without Accessibility or Screen Recording. Missing TCC grants only
+        // remove protected details such as window titles. Screenshots remain the
+        // only feature that must block the session when permission is unavailable.
+        resolve(permission === "granted" || !config.captureScreenshots ? "granted" : permission);
       });
       child.once("exit", (code) => {
         if (code !== null && code !== 0) {

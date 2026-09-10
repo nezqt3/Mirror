@@ -3,7 +3,6 @@ export { CharacterPageContainer } from "./ui/CharacterPageContainer";
 export { characterApi, toMirrorCharacter } from "./api/characterApi";
 export type { CharacterResponse, CreateCharacterPayload } from "./api/characterApi";
 export { MirrorAvatar } from "./ui/MirrorAvatar";
-export { baseMirrorCharacter, characterSessionProgress } from "./model/mockCharacter";
 export {
   characterStatDefinitions,
   didLevelUp,

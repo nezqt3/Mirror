@@ -30,6 +30,7 @@ private final class CaptureHelper {
     private var timer: DispatchSourceTimer?
     private var sessionId: String?
     private var lastApplicationKey: String?
+    private var lastHeartbeatAt: Date?
     private var privacy = PrivacyFilters.defaults
 
     func handle(_ command: HelperCommand) {
@@ -68,6 +69,7 @@ private final class CaptureHelper {
         self.sessionId = sessionId
         self.privacy = privacy
         lastApplicationKey = nil
+        lastHeartbeatAt = nil
 
         let timer = DispatchSource.makeTimerSource(queue: captureQueue)
         timer.schedule(deadline: .now(), repeating: .milliseconds(750), leeway: .milliseconds(100))
@@ -85,6 +87,7 @@ private final class CaptureHelper {
         timer = nil
         sessionId = nil
         lastApplicationKey = nil
+        lastHeartbeatAt = nil
         if emitStatusMessage {
             emitStatus("stopped")
         }
@@ -99,6 +102,10 @@ private final class CaptureHelper {
         let applicationName = application.localizedName ?? "Unknown application"
         let bundleIdentifier = application.bundleIdentifier ?? "unknown"
         let windowTitle = frontmostWindowTitle(processIdentifier: application.processIdentifier)
+        emitHeartbeatIfNeeded(
+            sessionId: sessionId,
+            processIdentifier: application.processIdentifier
+        )
         let key = "\(bundleIdentifier)|\(windowTitle ?? "")"
         guard key != lastApplicationKey else { return }
         lastApplicationKey = key
@@ -137,6 +144,29 @@ private final class CaptureHelper {
         ])
     }
 
+    private func emitHeartbeatIfNeeded(sessionId: String, processIdentifier: pid_t) {
+        let now = Date()
+        if let lastHeartbeatAt, now.timeIntervalSince(lastHeartbeatAt) < 5 {
+            return
+        }
+        self.lastHeartbeatAt = now
+        emit([
+            "kind": "event",
+            "event": [
+                "id": UUID().uuidString.lowercased(),
+                "sessionId": sessionId,
+                "type": "heartbeat",
+                "timestamp": ISO8601DateFormatter.mirror.string(from: now),
+                "platform": "macos",
+                "source": "swift-capture-helper",
+                "payload": [
+                    "activeProcessId": processIdentifier,
+                    "idle": false
+                ]
+            ]
+        ])
+    }
+
     private func frontmostWindowTitle(processIdentifier: pid_t) -> String? {
         let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]
         guard let windows = CGWindowListCopyWindowInfo(options, kCGNullWindowID) as? [[String: Any]] else {
@@ -153,18 +183,17 @@ private final class CaptureHelper {
         requestAccess: Bool = false,
         requiresScreenCapture: Bool = false
     ) -> String {
-        let accessibilityGranted: Bool
-        if requestAccess {
+        var accessibilityGranted = AXIsProcessTrusted()
+        if !accessibilityGranted && requestAccess {
             let prompt = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
                 as CFDictionary
             accessibilityGranted = AXIsProcessTrustedWithOptions(prompt)
-        } else {
-            accessibilityGranted = AXIsProcessTrusted()
         }
 
-        let screenCaptureGranted = !requiresScreenCapture || (
-            requestAccess ? CGRequestScreenCaptureAccess() : CGPreflightScreenCaptureAccess()
-        )
+        var screenCaptureGranted = !requiresScreenCapture || CGPreflightScreenCaptureAccess()
+        if requiresScreenCapture && !screenCaptureGranted && requestAccess {
+            screenCaptureGranted = CGRequestScreenCaptureAccess()
+        }
         return accessibilityGranted && screenCaptureGranted ? "granted" : "not-determined"
     }
 

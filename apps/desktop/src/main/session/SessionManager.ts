@@ -45,7 +45,8 @@ export class SessionManager extends EventEmitter {
 
   async start(
     input: FocusSessionConfigInput,
-    privacyInput: PrivacySettings = DEFAULT_PRIVACY_SETTINGS
+    privacyInput: PrivacySettings = DEFAULT_PRIVACY_SETTINGS,
+    requestedSessionId?: string
   ): Promise<SessionState> {
     if (this.state.status !== "idle" && this.state.status !== "failed") {
       throw new Error("A Focus Session is already active");
@@ -59,7 +60,7 @@ export class SessionManager extends EventEmitter {
         "Mirror needs Accessibility and Screen Recording permission. Grant access in System Settings, then try again."
       );
     }
-    const sessionId = randomUUID();
+    const sessionId = requestedSessionId ?? randomUUID();
     const started = new Date();
     const startedAt = started.toISOString();
     const plannedEndsAt = new Date(
@@ -143,6 +144,7 @@ export class SessionManager extends EventEmitter {
     if (!allowedEvent) return;
 
     this.persistenceQueue = this.persistenceQueue.then(() => this.repository.append(allowedEvent));
+    this.emit("session-event", structuredClone(allowedEvent));
     this.setState({ ...this.state, eventCount: this.state.eventCount + 1 });
   }
 

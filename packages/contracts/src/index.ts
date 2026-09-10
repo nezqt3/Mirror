@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export * from "./raw-activity.js";
+
 export const platformSchema = z.enum(["macos", "windows", "linux", "mock"]);
 export type Platform = z.infer<typeof platformSchema>;
 
@@ -173,16 +175,18 @@ export const IPC_CHANNELS = {
   sessionStop: "session:stop",
   sessionGetState: "session:get-state",
   sessionStateChanged: "session:state-changed",
+  sessionEvent: "session:event",
   privacyGetSettings: "privacy:get-settings",
   privacySaveSettings: "privacy:save-settings",
   applicationsList: "applications:list"
 } as const;
 
 export interface MirrorDesktopApi {
-  startSession(config: FocusSessionConfigInput): Promise<SessionState>;
+  startSession(config: FocusSessionConfigInput, sessionId?: string): Promise<SessionState>;
   stopSession(): Promise<CompletedSession>;
   getSessionState(): Promise<SessionState>;
   onSessionStateChanged(listener: (state: SessionState) => void): () => void;
+  onSessionEvent(listener: (event: CaptureEvent) => void): () => void;
   getPrivacySettings(): Promise<PrivacySettings>;
   savePrivacySettings(settings: PrivacySettings): Promise<PrivacySettings>;
   listApplications(): Promise<InstalledApplication[]>;

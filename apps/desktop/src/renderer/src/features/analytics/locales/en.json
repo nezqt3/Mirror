@@ -1,5 +1,6 @@
 {
-  "header": { "eyebrow": "WORK PATTERNS", "title": "Analytics", "description": "See where your attention creates momentum and where it quietly leaks away.", "mockData": "Preview data" },
+  "header": { "eyebrow": "WORK PATTERNS", "title": "Analytics", "description": "See where your attention creates momentum and where it quietly leaks away.", "serverData": "Synced data" },
+  "state": { "loading": "Loading analytics…", "noAdvice": "Complete a session to receive tailored advice." },
   "score": { "eyebrow": "THIS WEEK", "title": "Strong focus rhythm", "description": "Your best sessions happen before the first major context switch.", "trend": "+8 points from last week" },
   "weekly": { "eyebrow": "DEEP WORK", "title": "Weekly rhythm", "ariaLabel": "Deep work minutes by day" },
   "days": { "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat", "sun": "Sun" },

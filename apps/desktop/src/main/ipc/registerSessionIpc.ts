@@ -14,9 +14,12 @@ export function registerSessionIpc(
   settingsRepository: SettingsRepository,
   captureAdapter: CaptureAdapter
 ): () => void {
-  ipcMain.handle(IPC_CHANNELS.sessionStart, async (_event, input: unknown) => {
+  ipcMain.handle(IPC_CHANNELS.sessionStart, async (_event, input: unknown, sessionId?: unknown) => {
     const privacy = await settingsRepository.getPrivacySettings();
-    return sessionManager.start(focusSessionConfigSchema.parse(input), privacy);
+    const parsedSessionId = typeof sessionId === "string" && /^[0-9a-f-]{36}$/i.test(sessionId)
+      ? sessionId
+      : undefined;
+    return sessionManager.start(focusSessionConfigSchema.parse(input), privacy, parsedSessionId);
   });
   ipcMain.handle(IPC_CHANNELS.sessionStop, () => sessionManager.stop());
   ipcMain.handle(IPC_CHANNELS.sessionGetState, () => sessionManager.getState());
@@ -34,6 +37,12 @@ export function registerSessionIpc(
     }
   };
   sessionManager.on("state-changed", broadcastState);
+  const broadcastEvent = (event: unknown): void => {
+    for (const window of BrowserWindow.getAllWindows()) {
+      window.webContents.send(IPC_CHANNELS.sessionEvent, event);
+    }
+  };
+  sessionManager.on("session-event", broadcastEvent);
 
   return () => {
     ipcMain.removeHandler(IPC_CHANNELS.sessionStart);
@@ -43,5 +52,6 @@ export function registerSessionIpc(
     ipcMain.removeHandler(IPC_CHANNELS.privacySaveSettings);
     ipcMain.removeHandler(IPC_CHANNELS.applicationsList);
     sessionManager.off("state-changed", broadcastState);
+    sessionManager.off("session-event", broadcastEvent);
   };
 }

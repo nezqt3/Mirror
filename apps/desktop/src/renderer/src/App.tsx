@@ -46,7 +46,7 @@ interface WorkspaceProps {
 function Workspace({ user, onLogout }: WorkspaceProps): React.JSX.Element {
   const { t } = useTranslation("app");
   const [activeView, setActiveView] = useState<View>("home");
-  const focus = useFocusSession();
+  const focus = useFocusSession(user.id);
   const activeNavigationItem = navigation.find((item) => item.id === activeView);
   const statusLabel = useMemo(
     () => t(`status.${focus.session.status}`),

@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import {
   IPC_CHANNELS,
+  captureEventSchema,
   installedApplicationSchema,
   privacySettingsSchema,
   sessionStateSchema,
@@ -11,8 +12,8 @@ import {
 } from "@mirror/contracts";
 
 const api: MirrorDesktopApi = {
-  startSession: (config: FocusSessionConfigInput) =>
-    ipcRenderer.invoke(IPC_CHANNELS.sessionStart, config),
+  startSession: (config: FocusSessionConfigInput, sessionId?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.sessionStart, config, sessionId),
   stopSession: () => ipcRenderer.invoke(IPC_CHANNELS.sessionStop),
   getSessionState: () => ipcRenderer.invoke(IPC_CHANNELS.sessionGetState),
   listApplications: async () =>
@@ -32,6 +33,14 @@ const api: MirrorDesktopApi = {
     };
     ipcRenderer.on(IPC_CHANNELS.sessionStateChanged, handler);
     return () => ipcRenderer.removeListener(IPC_CHANNELS.sessionStateChanged, handler);
+  },
+  onSessionEvent: (listener) => {
+    const handler = (_event: Electron.IpcRendererEvent, raw: unknown): void => {
+      const parsed = captureEventSchema.safeParse(raw);
+      if (parsed.success) listener(parsed.data);
+    };
+    ipcRenderer.on(IPC_CHANNELS.sessionEvent, handler);
+    return () => ipcRenderer.removeListener(IPC_CHANNELS.sessionEvent, handler);
   }
 };
 

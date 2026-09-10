@@ -19,8 +19,8 @@ docker compose ps
 docker compose logs -f api worker
 ```
 
-При создании Focus Session frontend может передать `analysis_locale: "en"` или
-`analysis_locale: "zh-CN"`. Значение по умолчанию — `en`; оно фиксируется на сессии и задаёт язык
+При создании Focus Session frontend может передать `analysis_locale: "en"`,
+`analysis_locale: "zh-CN"` или `analysis_locale: "ru"`. Значение по умолчанию — `en`; оно фиксируется на сессии и задаёт язык
 всех текстовых значений AI-отчёта. JSON-поля при этом всегда остаются английскими.
 
 `POST /api/v1/auth/refresh` ротирует refresh token: клиент должен сохранить оба новых токена из
@@ -130,6 +130,7 @@ make test-ai
 ```bash
 python scripts/check_ai.py --scenario deep_work_success --locale en
 python scripts/check_ai.py --scenario deep_work_success --locale zh-CN
+python scripts/check_ai.py --scenario deep_work_success --locale ru
 ```
 
 Прогнать сразу три сценария качества модели:

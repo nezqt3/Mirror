@@ -7,7 +7,7 @@ export interface SessionResponse {
   id: string;
   goal: string;
   planned_duration_minutes: number;
-  analysis_locale: "en" | "zh-CN";
+  analysis_locale: "en" | "zh-CN" | "ru";
   status: BackendSessionStatus;
   client_timezone: string;
   started_at: string;
@@ -19,7 +19,7 @@ export interface CreateSessionPayload {
   goal: string;
   planned_duration_minutes: number;
   client_timezone: string;
-  analysis_locale: "en" | "zh-CN";
+  analysis_locale: "en" | "zh-CN" | "ru";
 }
 
 export interface CompletedReport {

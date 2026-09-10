@@ -28,7 +28,7 @@ class FocusSession(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "focus_sessions"
     __table_args__ = (
         CheckConstraint(
-            "analysis_locale IN ('en', 'zh-CN')",
+            "analysis_locale IN ('en', 'zh-CN', 'ru')",
             name="ck_focus_sessions_analysis_locale",
         ),
     )

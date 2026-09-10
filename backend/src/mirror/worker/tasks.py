@@ -18,7 +18,12 @@ from mirror.modules.characters.service import apply_daily_discipline
 from mirror.modules.events.model import ActivityEvent
 from mirror.modules.reports.model import SessionReport
 from mirror.modules.sessions.model import FocusSession, SessionStatus
-from mirror.services.analyzer import AnalysisResult, Analyzer, Rewards
+from mirror.services.analyzer import (
+    AnalysisResult,
+    Analyzer,
+    Rewards,
+    UnsupportedAnalysisLocaleError,
+)
 from mirror.services.analyzer_factory import create_analyzer
 from mirror.services.groq_analyzer import PermanentAnalyzerError
 from mirror.worker.celery_app import celery_app
@@ -36,7 +41,7 @@ MAX_RETRIES = 3
 def analyze_session(task: Any, session_id: str) -> None:
     try:
         asyncio.run(_analyze_session(UUID(session_id)))
-    except PermanentAnalyzerError as exc:
+    except (PermanentAnalyzerError, UnsupportedAnalysisLocaleError) as exc:
         asyncio.run(_mark_failed(UUID(session_id), AnalysisErrorCode.AI_CONFIGURATION_ERROR))
         logger.error("session_analysis_permanent_failure", session_id=session_id, error=str(exc))
         raise

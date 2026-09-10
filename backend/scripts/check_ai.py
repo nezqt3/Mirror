@@ -22,7 +22,7 @@ async def main() -> None:
     parser.add_argument("--all", action="store_true", help="Run all quality scenarios")
     parser.add_argument(
         "--locale",
-        choices=("en", "zh-CN"),
+        choices=("en", "zh-CN", "ru"),
         default="en",
         help="Language required for human-readable report values",
     )

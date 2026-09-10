@@ -64,6 +64,10 @@ class Analyzer(Protocol):
     async def aclose(self) -> None: ...
 
 
+class UnsupportedAnalysisLocaleError(RuntimeError):
+    """The persisted session requests an output language the analyzer cannot produce."""
+
+
 def build_analysis_input(
     session: FocusSession,
     events: Sequence[ActivityEvent],
@@ -151,17 +155,25 @@ class BaselineSessionAnalyzer:
             deep_work_minutes=metrics.deep_work_minutes,
         )
         top_source = metrics.top_sources[0]["source"] if metrics.top_sources else "unknown"
-        localized = (
-            {
-                "insight": f"最常使用的工作环境：{top_source}",
-                "advice": "请在会话结束时记录目标是否已完成。",
-            }
-            if analysis_input.analysis_locale == "zh-CN"
-            else {
+        localized_by_locale = {
+            "en": {
                 "insight": f"Most used context: {top_source}",
                 "advice": "Record whether the goal was completed at the end of the session.",
-            }
-        )
+            },
+            "zh-CN": {
+                "insight": f"最常使用的工作环境：{top_source}",
+                "advice": "请在会话结束时记录目标是否已完成。",
+            },
+            "ru": {
+                "insight": f"Чаще всего использовался рабочий контекст: {top_source}",
+                "advice": "В конце следующей сессии отметьте, была ли достигнута цель.",
+            },
+        }
+        localized = localized_by_locale.get(analysis_input.analysis_locale)
+        if localized is None:
+            raise UnsupportedAnalysisLocaleError(
+                f"Unsupported analysis locale: {analysis_input.analysis_locale}"
+            )
         return AnalysisResult(
             goal_completion=None,
             focus_score=focus_score,

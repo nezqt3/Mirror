@@ -7,12 +7,14 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validato
 
 from mirror.modules.sessions.model import SessionStatus
 
+AnalysisLocale = Literal["en", "zh-CN", "ru"]
+
 
 class SessionCreate(BaseModel):
     goal: str = Field(min_length=3, max_length=2000)
     planned_duration_minutes: int = Field(ge=5, le=480)
     client_timezone: str = Field(default="UTC", max_length=64)
-    analysis_locale: Literal["en", "zh-CN"] = "en"
+    analysis_locale: AnalysisLocale = "en"
 
     @field_validator("client_timezone")
     @classmethod
@@ -34,7 +36,7 @@ class SessionRead(BaseModel):
     id: UUID
     goal: str
     planned_duration_minutes: int
-    analysis_locale: Literal["en", "zh-CN"]
+    analysis_locale: AnalysisLocale
     status: SessionStatus
     client_timezone: str
     started_at: datetime

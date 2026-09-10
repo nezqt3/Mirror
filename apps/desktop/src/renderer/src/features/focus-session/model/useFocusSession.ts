@@ -308,11 +308,7 @@ export function useFocusSession(userId: string): FocusSessionController {
           clientTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
           analysisLocale: toAnalysisLocale(language)
         });
-        const rawPayload = toSessionCreatePayload(config);
-        const createPayload = {
-          ...rawPayload,
-          analysis_locale: rawPayload.analysis_locale === "zh-CN" ? "zh-CN" as const : "en" as const
-        };
+        const createPayload = toSessionCreatePayload(config);
         const remoteSession = await sessionApi.create(createPayload);
         try {
           await api.startSession(config, remoteSession.id);

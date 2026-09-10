@@ -14,7 +14,7 @@ from mirror.modules.events.model import ActivityEvent, EventType
 from mirror.modules.reports.model import SessionReport
 from mirror.modules.sessions.model import FocusSession, SessionStatus
 from mirror.modules.users.model import User
-from mirror.services.analyzer import AnalysisResult, Rewards
+from mirror.services.analyzer import AnalysisResult, BaselineSessionAnalyzer, Rewards
 from mirror.worker.tasks import _analyze_session, _apply_rewards
 
 RUN_DB_INTEGRATION = os.getenv("RUN_DB_INTEGRATION") == "1"
@@ -22,7 +22,13 @@ RUN_DB_INTEGRATION = os.getenv("RUN_DB_INTEGRATION") == "1"
 
 @pytest.mark.skipif(not RUN_DB_INTEGRATION, reason="set RUN_DB_INTEGRATION=1")
 @pytest.mark.asyncio
-async def test_worker_persists_report_and_applies_rewards() -> None:
+async def test_worker_persists_report_and_applies_rewards(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "mirror.worker.tasks.create_analyzer",
+        lambda _settings: BaselineSessionAnalyzer(),
+    )
     engine = create_async_engine(get_settings().database_url)
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
     user_id = uuid4()

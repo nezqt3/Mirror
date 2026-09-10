@@ -27,6 +27,35 @@ def test_real_authenticated_api_pipeline() -> None:
 
 
 @pytest.mark.skipif(not RUN_API_INTEGRATION, reason="set RUN_API_INTEGRATION=1")
+def test_real_russian_report_pipeline() -> None:
+    environment = {**os.environ, "MIRROR_ANALYSIS_LOCALE": "ru"}
+    completed = subprocess.run(
+        [sys.executable, "scripts/check_pipeline.py"],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=environment,
+    )
+    report = json.loads(completed.stdout)
+    report_text = " ".join(
+        value
+        for value in [
+            report.get("main_bottleneck"),
+            *report["distractions"],
+            *report["insights"],
+            report.get("next_session_advice"),
+        ]
+        if value
+    )
+
+    assert report["status"] == "completed"
+    assert any(
+        "а" <= character.lower() <= "я" or character.lower() == "ё"
+        for character in report_text
+    )
+
+
+@pytest.mark.skipif(not RUN_API_INTEGRATION, reason="set RUN_API_INTEGRATION=1")
 def test_real_refresh_rotation_and_logout() -> None:
     email = f"mirror.auth.{uuid4().hex[:12]}@example.com"
     password = "MirrorAuth-2026!"

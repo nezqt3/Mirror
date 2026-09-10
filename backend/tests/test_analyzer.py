@@ -1,9 +1,16 @@
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
+import pytest
+
 from mirror.modules.events.model import ActivityEvent, EventType
 from mirror.modules.sessions.model import FocusSession
-from mirror.services.analyzer import build_analysis_input, calculate_rewards
+from mirror.services.analyzer import (
+    BaselineSessionAnalyzer,
+    UnsupportedAnalysisLocaleError,
+    build_analysis_input,
+    calculate_rewards,
+)
 
 
 def test_build_analysis_input_calculates_deterministic_metrics() -> None:
@@ -93,6 +100,45 @@ def test_analysis_input_removes_url_queries_and_executable_paths() -> None:
 
     assert result.events[0]["payload"]["url"] == "https://search.example/results"
     assert result.events[0]["payload"]["executablePath"] == "Browser.app"
+
+
+@pytest.mark.asyncio
+async def test_baseline_analyzer_returns_russian_human_readable_fields() -> None:
+    started_at = datetime(2026, 9, 2, 10, 0, tzinfo=UTC)
+    session = FocusSession(
+        user_id=uuid4(),
+        goal="Завершить презентацию",
+        analysis_locale="ru",
+        planned_duration_minutes=60,
+        started_at=started_at,
+        ended_at=started_at + timedelta(minutes=60),
+    )
+
+    result = await BaselineSessionAnalyzer().analyze(
+        session,
+        [_event(started_at, EventType.APP_FOCUS, "Keynote")],
+    )
+
+    assert result.insights == ["Чаще всего использовался рабочий контекст: Keynote"]
+    assert result.next_session_advice == (
+        "В конце следующей сессии отметьте, была ли достигнута цель."
+    )
+
+
+@pytest.mark.asyncio
+async def test_baseline_analyzer_does_not_fall_back_to_english_for_unknown_locale() -> None:
+    started_at = datetime(2026, 9, 2, 10, 0, tzinfo=UTC)
+    session = FocusSession(
+        user_id=uuid4(),
+        goal="Finish presentation",
+        analysis_locale="de",
+        planned_duration_minutes=60,
+        started_at=started_at,
+        ended_at=started_at + timedelta(minutes=60),
+    )
+
+    with pytest.raises(UnsupportedAnalysisLocaleError, match="de"):
+        await BaselineSessionAnalyzer().analyze(session, [])
 
 
 def _event(

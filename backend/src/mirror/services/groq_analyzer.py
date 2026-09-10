@@ -105,6 +105,7 @@ JSON object and no extra fields."""
 OUTPUT_LANGUAGES = {
     "en": "English",
     "zh-CN": "Simplified Chinese (简体中文)",
+    "ru": "Russian (Русский)",
 }
 
 
@@ -210,6 +211,8 @@ class GroqSessionAnalyzer(Analyzer):
                 "AI provider returned an invalid structured response"
             ) from exc
 
+        _validate_output_language(ai_result, analysis_input.analysis_locale)
+
         goal_completion = (
             float(ai_result.goal_completion) if ai_result.goal_completion is not None else None
         )
@@ -241,6 +244,26 @@ class GroqSessionAnalyzer(Analyzer):
     async def aclose(self) -> None:
         await self._client.aclose()
 
+
+def _validate_output_language(result: AIAnalysis, locale: str) -> None:
+    """Reject an obviously wrong language instead of persisting it as a valid report."""
+    text = " ".join(
+        value
+        for value in [
+            result.main_bottleneck,
+            *result.distractions,
+            *result.insights,
+            result.next_session_advice,
+        ]
+        if value
+    )
+    if locale == "ru":
+        alphabetic = sum(character.isalpha() for character in text)
+        cyrillic = sum("\u0400" <= character <= "\u04ff" for character in text)
+        if alphabetic == 0 or cyrillic / alphabetic < 0.3:
+            raise RetryableAnalyzerError("AI provider returned report text in the wrong language")
+    elif locale == "zh-CN" and not any("\u4e00" <= character <= "\u9fff" for character in text):
+        raise RetryableAnalyzerError("AI provider returned report text in the wrong language")
 
 def _provider_error(response: httpx.Response) -> str:
     try:

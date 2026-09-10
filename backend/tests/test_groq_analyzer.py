@@ -8,7 +8,11 @@ import pytest
 from mirror.db import models as _models  # noqa: F401
 from mirror.modules.events.model import ActivityEvent, EventType
 from mirror.modules.sessions.model import FocusSession
-from mirror.services.groq_analyzer import GroqSessionAnalyzer, RetryableAnalyzerError
+from mirror.services.groq_analyzer import (
+    GroqSessionAnalyzer,
+    PermanentAnalyzerError,
+    RetryableAnalyzerError,
+)
 
 
 @pytest.mark.asyncio
@@ -89,6 +93,124 @@ async def test_groq_analyzer_preserves_unknown_goal_completion() -> None:
         await analyzer.aclose()
 
     assert result.goal_completion is None
+
+
+@pytest.mark.asyncio
+async def test_groq_analyzer_requests_and_accepts_russian_output() -> None:
+    captured: dict[str, object] = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        captured.update(json.loads(request.content))
+        content = {
+            "goal_completion": 80,
+            "focus_score": 75,
+            "main_bottleneck": "Слишком долгое исследование",
+            "distractions": ["Telegram — три переключения"],
+            "insights": ["После исследования работа продолжилась в Keynote"],
+            "next_session_advice": "Ограничьте исследование первыми двадцатью минутами.",
+        }
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(content, ensure_ascii=False)}}]},
+        )
+
+    analyzer = GroqSessionAnalyzer(
+        api_key="test-key",
+        base_url="https://api.groq.test/openai/v1",
+        transport=httpx.MockTransport(handler),
+    )
+    try:
+        result = await analyzer.analyze(_session("ru"), [_event()])
+    finally:
+        await analyzer.aclose()
+
+    messages = captured["messages"]
+    assert isinstance(messages, list)
+    assert "Write every human-readable string value in Russian (Русский)" in messages[0]["content"]
+    assert json.loads(messages[1]["content"])["session"]["analysis_locale"] == "ru"
+    assert result.main_bottleneck == "Слишком долгое исследование"
+    assert result.next_session_advice == (
+        "Ограничьте исследование первыми двадцатью минутами."
+    )
+
+
+@pytest.mark.asyncio
+async def test_groq_analyzer_rejects_english_report_when_russian_was_requested() -> None:
+    async def handler(_: httpx.Request) -> httpx.Response:
+        content = {
+            "goal_completion": 80,
+            "focus_score": 75,
+            "main_bottleneck": "Research took too long",
+            "distractions": ["Telegram — three switches"],
+            "insights": ["The session returned to Keynote after research"],
+            "next_session_advice": "Limit research to twenty minutes.",
+        }
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(content)}}]},
+        )
+
+    analyzer = GroqSessionAnalyzer(
+        api_key="test-key",
+        base_url="https://api.groq.test/openai/v1",
+        transport=httpx.MockTransport(handler),
+    )
+    try:
+        with pytest.raises(RetryableAnalyzerError, match="wrong language"):
+            await analyzer.analyze(_session("ru"), [_event()])
+    finally:
+        await analyzer.aclose()
+
+
+@pytest.mark.asyncio
+async def test_groq_analyzer_rejects_non_chinese_report_when_chinese_was_requested() -> None:
+    async def handler(_: httpx.Request) -> httpx.Response:
+        content = {
+            "goal_completion": 80,
+            "focus_score": 75,
+            "main_bottleneck": "Research took too long",
+            "distractions": [],
+            "insights": ["The session remained focused"],
+            "next_session_advice": "Limit research to twenty minutes.",
+        }
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": json.dumps(content)}}]},
+        )
+
+    analyzer = GroqSessionAnalyzer(
+        api_key="test-key",
+        base_url="https://api.groq.test/openai/v1",
+        transport=httpx.MockTransport(handler),
+    )
+    try:
+        with pytest.raises(RetryableAnalyzerError, match="wrong language"):
+            await analyzer.analyze(_session("zh-CN"), [_event()])
+    finally:
+        await analyzer.aclose()
+
+
+@pytest.mark.asyncio
+async def test_groq_analyzer_rejects_unknown_locale_before_calling_provider() -> None:
+    provider_called = False
+
+    async def handler(_: httpx.Request) -> httpx.Response:
+        nonlocal provider_called
+        provider_called = True
+        return httpx.Response(500)
+
+    analyzer = GroqSessionAnalyzer(
+        api_key="test-key",
+        base_url="https://api.groq.test/openai/v1",
+        transport=httpx.MockTransport(handler),
+    )
+    try:
+        with pytest.raises(PermanentAnalyzerError, match="de"):
+            await analyzer.analyze(_session("de"), [_event()])
+    finally:
+        await analyzer.aclose()
+
+    assert provider_called is False
 
 
 @pytest.mark.asyncio

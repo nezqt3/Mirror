@@ -34,6 +34,11 @@ const EMPTY_ANALYTICS: AnalyticsSnapshot = {
   nextSessionAdvice: null
 };
 
+// Reports are created asynchronously after a session ends. Keep this view in
+// sync while it is open so a finished AI analysis is reflected without a
+// manual navigation or refresh.
+const ANALYTICS_POLL_INTERVAL_MS = 5_000;
+
 async function loadAnalytics(): Promise<AnalyticsSnapshot> {
   const history = await loadSessionHistory();
   const completed = history.sessions.filter((session) => session.report?.status === "completed");
@@ -73,20 +78,24 @@ export function useAnalytics() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<ApiError | null>(null);
 
-  const reload = useCallback(async () => {
-    setIsLoading(true);
+  const reload = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true);
     setError(null);
     try {
       setAnalytics(await loadAnalytics());
     } catch (caught) {
       setError(caught instanceof ApiError ? caught : new ApiError("Unable to load analytics"));
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
     void reload();
+    const intervalId = window.setInterval(() => {
+      void reload(true);
+    }, ANALYTICS_POLL_INTERVAL_MS);
+    return () => window.clearInterval(intervalId);
   }, [reload]);
 
   return { analytics, isLoading, error, reload };

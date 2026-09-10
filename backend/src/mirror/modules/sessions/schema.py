@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import UUID
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator
 
+from mirror.core.errors import AnalysisErrorCode
 from mirror.modules.sessions.model import SessionStatus
 
 AnalysisLocale = Literal["en", "zh-CN", "ru"]
@@ -42,3 +43,31 @@ class SessionRead(BaseModel):
     started_at: datetime
     ended_at: datetime | None
     created_at: datetime
+
+
+class CompletedReportSummary(BaseModel):
+    status: Literal["completed"] = "completed"
+    goal_completion: float | None = Field(default=None, ge=0, le=100)
+    focus_score: int = Field(ge=0, le=100)
+    deep_work_minutes: int = Field(ge=0)
+    context_switches: int = Field(ge=0)
+
+
+class ProcessingReportSummary(BaseModel):
+    status: Literal["processing"] = "processing"
+
+
+class FailedReportSummary(BaseModel):
+    status: Literal["failed"] = "failed"
+    error_code: AnalysisErrorCode
+    can_retry: bool = True
+
+
+ReportSummary = Annotated[
+    CompletedReportSummary | ProcessingReportSummary | FailedReportSummary,
+    Field(discriminator="status"),
+]
+
+
+class SessionHistoryItem(SessionRead):
+    report_summary: ReportSummary | None

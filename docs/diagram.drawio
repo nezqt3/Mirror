@@ -1,0 +1,160 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram id="mirror-loop" name="Mirror Intelligence Loop">
+    <mxGraphModel dx="1357" dy="935" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="goal" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111827;fontColor=#F9FAFB;strokeColor=#6366F1;strokeWidth=2;fontSize=16;fontStyle=1;shadow=1;" value="&lt;b&gt;GOAL&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Finish presentation&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="380" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="session" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111827;fontColor=#F9FAFB;strokeColor=#6366F1;strokeWidth=2;fontSize=16;fontStyle=1;shadow=1;" value="&lt;b&gt;FOCUS SESSION&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Real work starts&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="220" x="380" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="context" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#171717;fontColor=#F5F5F5;strokeColor=#404040;strokeWidth=2;fontSize=15;shadow=1;" value="&lt;b&gt;WORK CONTEXT&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Apps • Windows • Websites&lt;br&gt;Active Time • Task Switching&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="340" x="320" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="ai" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#312E81;fontColor=#FFFFFF;strokeColor=#A5B4FC;strokeWidth=3;fontSize=16;fontStyle=1;shadow=1;" value="&lt;b&gt;AI ANALYSIS&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Reconstruct session&lt;br&gt;Detect patterns&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="220" x="380" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="metrics" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#171717;fontColor=#F5F5F5;strokeColor=#404040;strokeWidth=2;fontSize=15;shadow=1;" value="&lt;b&gt;METRICS&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Goal Completion • Focus Score&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="240" x="80" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="bottleneck" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#171717;fontColor=#F5F5F5;strokeColor=#404040;strokeWidth=2;fontSize=15;shadow=1;" value="&lt;b&gt;BOTTLENECK&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Research loop / distraction&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="240" x="370" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="patterns" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#171717;fontColor=#F5F5F5;strokeColor=#404040;strokeWidth=2;fontSize=15;shadow=1;" value="&lt;b&gt;PATTERNS&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Context switching • habits&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="240" x="660" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="action" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111827;fontColor=#F9FAFB;strokeColor=#6366F1;strokeWidth=2;fontSize=16;fontStyle=1;shadow=1;" value="&lt;b&gt;NEXT ACTION&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Concrete advice for next session&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="240" x="370" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="model" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111827;fontColor=#F9FAFB;strokeColor=#6366F1;strokeWidth=2;fontSize=16;fontStyle=1;shadow=1;" value="&lt;b&gt;PERSONAL WORK MODEL&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Learns across sessions&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="240" x="370" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="character" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#171717;fontColor=#F5F5F5;strokeColor=#404040;strokeWidth=2;fontSize=15;shadow=1;" value="&lt;b&gt;MIRROR CHARACTER&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Focus • Execution • Discipline&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="270" x="120" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="next" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#111827;fontColor=#F9FAFB;strokeColor=#6366F1;strokeWidth=2;fontSize=16;fontStyle=1;shadow=1;" value="&lt;b&gt;NEXT SESSION&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#BFC7D5&#39;&gt;Apply advice • measure again&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="270" x="590" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="e100" edge="1" parent="1" source="goal" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="session" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e101" edge="1" parent="1" source="session" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="context" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e102" edge="1" parent="1" source="context" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="ai" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e103" edge="1" parent="1" source="ai" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="metrics" value="Metrics">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e104" edge="1" parent="1" source="ai" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="bottleneck" value="Why progress stopped">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e105" edge="1" parent="1" source="ai" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="patterns" value="Behavior patterns">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e106" edge="1" parent="1" source="metrics" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="action" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e107" edge="1" parent="1" source="bottleneck" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="action" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e108" edge="1" parent="1" source="patterns" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="action" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e109" edge="1" parent="1" source="action" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="model" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e110" edge="1" parent="1" source="model" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="character" value="Progress">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e111" edge="1" parent="1" source="model" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="next" value="Improve">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e112" edge="1" parent="1" source="next" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#818CF8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D1D5DB;fontSize=12;" target="goal" value="Feedback loop">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="mirror-user-journey" name="01 — Путь пользователя">
+    <mxGraphModel dx="1357" dy="935" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;Mirror: от намерения к устойчивому улучшению&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;Продукт измеряет не экранное время, а движение к результату.&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontColor=#0F172A;fontSize=24;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="50" y="30" width="1050" height="60" as="geometry" /></mxCell>
+        <mxCell id="lane1" value="ВО ВРЕМЯ FOCUS SESSION" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=none;fontColor=#475569;fontSize=12;fontStyle=1;align=left;spacingLeft=18;" vertex="1" parent="1"><mxGeometry x="40" y="120" width="1060" height="190" as="geometry" /></mxCell>
+        <mxCell id="lane2" value="ЦЕННОСТЬ ПОСЛЕ СЕССИИ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=none;fontColor=#475569;fontSize=12;fontStyle=1;align=left;spacingLeft=18;" vertex="1" parent="1"><mxGeometry x="40" y="350" width="1060" height="190" as="geometry" /></mxCell>
+        <mxCell id="j1" value="&lt;b&gt;1. Ясная цель&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;«Закончить pitch deck»&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEF2FF;strokeColor=#6366F1;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="75" y="185" width="180" height="80" as="geometry" /></mxCell>
+        <mxCell id="j2" value="&lt;b&gt;2. Focus Session&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;90 минут намеренной работы&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="330" y="185" width="190" height="80" as="geometry" /></mxCell>
+        <mxCell id="j3" value="&lt;b&gt;3. Разрешённый контекст&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;сигналы, активность, переключения&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="595" y="185" width="200" height="80" as="geometry" /></mxCell>
+        <mxCell id="j4" value="&lt;b&gt;4. AI понимает ход работы&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;а не только число часов&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F59E0B;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="870" y="185" width="190" height="80" as="geometry" /></mxCell>
+        <mxCell id="j5" value="&lt;b&gt;5. Один точный вывод&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;главный барьер сессии&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F59E0B;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="870" y="415" width="190" height="80" as="geometry" /></mxCell>
+        <mxCell id="j6" value="&lt;b&gt;6. Следующий шаг&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;конкретный совет AI&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEF2FF;strokeColor=#6366F1;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="595" y="415" width="200" height="80" as="geometry" /></mxCell>
+        <mxCell id="j7" value="&lt;b&gt;7. Видимый прогресс&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;XP, Focus, Execution&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="330" y="415" width="190" height="80" as="geometry" /></mxCell>
+        <mxCell id="j8" value="&lt;b&gt;8. Сессия лучше&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;новая, более сильная точка старта&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEF2FF;strokeColor=#6366F1;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="75" y="415" width="180" height="80" as="geometry" /></mxCell>
+        <mxCell id="je1" edge="1" parent="1" source="j1" target="j2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="je2" edge="1" parent="1" source="j2" target="j3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="je3" edge="1" parent="1" source="j3" target="j4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="je4" edge="1" parent="1" source="j4" target="j5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#F59E0B;strokeWidth=2;endArrow=block;endFill=1;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="je5" edge="1" parent="1" source="j5" target="j6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="je6" edge="1" parent="1" source="j6" target="j7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="je7" edge="1" parent="1" source="j7" target="j8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="quote" value="&lt;b&gt;Главная мысль для демо:&lt;/b&gt; Mirror не просит работать больше — он помогает понять, что изменить в следующей сессии." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F172A;strokeColor=none;fontColor=#F8FAFC;fontSize=16;align=center;" vertex="1" parent="1"><mxGeometry x="130" y="590" width="880" height="60" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="mirror-trust-architecture" name="02 — Приватность и система">
+    <mxGraphModel dx="1357" dy="935" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+        <mxCell id="tt" value="&lt;b&gt;Приватность — часть ценности Mirror&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;Пользователь контролирует момент сбора, а данные служат личному улучшению, не наблюдению.&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontColor=#0F172A;fontSize=24;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="50" y="30" width="1050" height="65" as="geometry" /></mxCell>
+        <mxCell id="device" value="&lt;b&gt;Устройство пользователя&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#166534&#39;&gt;Только добровольная&lt;br&gt;Focus Session&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#22C55E;strokeWidth=2;fontColor=#0F172A;fontSize=16;shadow=1;" vertex="1" parent="1"><mxGeometry x="70" y="215" width="190" height="105" as="geometry" /></mxCell>
+        <mxCell id="local" value="&lt;b&gt;Локальная граница&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;Electron Main + Adapter&lt;br&gt;Нормализованные события&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;strokeWidth=2;fontColor=#0F172A;fontSize=16;shadow=1;" vertex="1" parent="1"><mxGeometry x="340" y="215" width="210" height="105" as="geometry" /></mxCell>
+        <mxCell id="analysis" value="&lt;b&gt;Разрешённый анализ&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;Агрегация → AI-отчёт&lt;br&gt;без keylogging&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F59E0B;strokeWidth=2;fontColor=#0F172A;fontSize=16;shadow=1;" vertex="1" parent="1"><mxGeometry x="630" y="215" width="200" height="105" as="geometry" /></mxCell>
+        <mxCell id="result" value="&lt;b&gt;Понятный результат&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#4338CA&#39;&gt;Goal Completion&lt;br&gt;барьер + следующий шаг&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEF2FF;strokeColor=#6366F1;strokeWidth=2;fontColor=#0F172A;fontSize=16;shadow=1;" vertex="1" parent="1"><mxGeometry x="910" y="215" width="190" height="105" as="geometry" /></mxCell>
+        <mxCell id="te1" edge="1" parent="1" source="device" target="local" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#22C55E;strokeWidth=2;endArrow=block;endFill=1;" value="только с согласия"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="te2" edge="1" parent="1" source="local" target="analysis" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#64748B;strokeWidth=2;endArrow=block;endFill=1;" value="агрегированные сигналы"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="te3" edge="1" parent="1" source="analysis" target="result" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#F59E0B;strokeWidth=2;endArrow=block;endFill=1;" value="персональный вывод"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p1" value="✓ Пользователь запускает и завершает сбор сам" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#E2E8F0;fontColor=#334155;fontSize=15;" vertex="1" parent="1"><mxGeometry x="90" y="420" width="285" height="55" as="geometry" /></mxCell>
+        <mxCell id="p2" value="✓ UI не получает прямого доступа к системным API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#E2E8F0;fontColor=#334155;fontSize=15;" vertex="1" parent="1"><mxGeometry x="440" y="420" width="325" height="55" as="geometry" /></mxCell>
+        <mxCell id="p3" value="✓ Данные служат человеку, а не слежке" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#E2E8F0;fontColor=#334155;fontSize=15;" vertex="1" parent="1"><mxGeometry x="830" y="420" width="260" height="55" as="geometry" /></mxCell>
+        <mxCell id="bottom" value="&lt;b&gt;Доверие создаёт качество данных.&lt;/b&gt; Качество данных создаёт точные персональные советы." style="text;html=1;strokeColor=none;fillColor=none;align=center;fontColor=#475569;fontSize=19;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="130" y="555" width="880" height="50" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="mirror-data-pipeline" name="03 — Данные → инсайт → графики">
+    <mxGraphModel dx="1357" dy="935" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+        <mxCell id="ptitle" value="&lt;b&gt;Как работа человека становится персональной аналитикой Mirror&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;Сигналы → проверенные события → AI‑отчёт → графики и рост персонажа.&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontColor=#0F172A;fontSize=24;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="45" y="25" width="1060" height="65" as="geometry" /></mxCell>
+        <mxCell id="lcollect" value="1. ВО ВРЕМЯ РАБОТЫ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=none;fontColor=#475569;fontSize=12;fontStyle=1;align=left;spacingLeft=14;" vertex="1" parent="1"><mxGeometry x="35" y="120" width="250" height="370" as="geometry" /></mxCell>
+        <mxCell id="lstore" value="2. ХРАНЕНИЕ И ОЧЕРЕДЬ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=none;fontColor=#475569;fontSize=12;fontStyle=1;align=left;spacingLeft=14;" vertex="1" parent="1"><mxGeometry x="305" y="120" width="270" height="370" as="geometry" /></mxCell>
+        <mxCell id="lanalyze" value="3. АНАЛИЗ И НАГРАДА" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=none;fontColor=#92400E;fontSize=12;fontStyle=1;align=left;spacingLeft=14;" vertex="1" parent="1"><mxGeometry x="595" y="120" width="250" height="370" as="geometry" /></mxCell>
+        <mxCell id="lshow" value="4. ЧТО ВИДИТ ЧЕЛОВЕК" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEF2FF;strokeColor=none;fontColor=#4338CA;fontSize=12;fontStyle=1;align=left;spacingLeft=14;" vertex="1" parent="1"><mxGeometry x="865" y="120" width="270" height="370" as="geometry" /></mxCell>
+        <mxCell id="capture" value="&lt;b&gt;Native Capture&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;macOS / Windows&lt;br&gt;приложение, окно, браузер,&lt;br&gt;idle, переключения&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="65" y="190" width="190" height="110" as="geometry" /></mxCell>
+        <mxCell id="bridge" value="&lt;b&gt;Focus Session UI&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;очередь пачек до 1 000&lt;br&gt;RawActivityEvent&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="65" y="350" width="190" height="90" as="geometry" /></mxCell>
+        <mxCell id="sessions" value="&lt;b&gt;focus_sessions&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;цель, время, timezone&lt;br&gt;active → processing → completed&lt;/font&gt;" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#475569;strokeWidth=2;fontColor=#0F172A;fontSize=14;" vertex="1" parent="1"><mxGeometry x="340" y="175" width="200" height="90" as="geometry" /></mxCell>
+        <mxCell id="events" value="&lt;b&gt;activity_events&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;occurred_at, type, payload&lt;br&gt;уникальный client_event_id&lt;/font&gt;" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#475569;strokeWidth=2;fontColor=#0F172A;fontSize=14;" vertex="1" parent="1"><mxGeometry x="340" y="330" width="200" height="90" as="geometry" /></mxCell>
+        <mxCell id="queue" value="&lt;b&gt;Redis + Celery&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;задача analyze_session&lt;br&gt;после finish&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#F59E0B;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="625" y="175" width="190" height="90" as="geometry" /></mxCell>
+        <mxCell id="aiworker" value="&lt;b&gt;AI worker&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;восстанавливает сессию&lt;br&gt;находит паттерн и барьер&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#F59E0B;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="625" y="330" width="190" height="90" as="geometry" /></mxCell>
+        <mxCell id="reports" value="&lt;b&gt;session_reports&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;focus_score, deep_work,&lt;br&gt;switches, bottleneck, advice&lt;/font&gt;" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#6366F1;strokeWidth=2;fontColor=#0F172A;fontSize=14;" vertex="1" parent="1"><mxGeometry x="895" y="170" width="210" height="95" as="geometry" /></mxCell>
+        <mxCell id="character" value="&lt;b&gt;characters&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#64748B&#39;&gt;XP, level, focus, stamina,&lt;br&gt;execution, discipline&lt;/font&gt;" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#FFFFFF;strokeColor=#6366F1;strokeWidth=2;fontColor=#0F172A;fontSize=14;" vertex="1" parent="1"><mxGeometry x="895" y="320" width="210" height="95" as="geometry" /></mxCell>
+        <mxCell id="screen" value="&lt;b&gt;Analytics &amp;amp; History&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#4338CA&#39;&gt;графики недели, средний Focus,&lt;br&gt;время deep work, советы AI&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEF2FF;strokeColor=#6366F1;strokeWidth=2;fontColor=#0F172A;fontSize=15;shadow=1;" vertex="1" parent="1"><mxGeometry x="895" y="555" width="210" height="95" as="geometry" /></mxCell>
+        <mxCell id="pe1" edge="1" parent="1" source="capture" target="bridge" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#64748B;strokeWidth=2;endArrow=block;endFill=1;" value="события"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe2" edge="1" parent="1" source="bridge" target="events" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#64748B;strokeWidth=2;endArrow=block;endFill=1;" value="POST /events/batch"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe3" edge="1" parent="1" source="bridge" target="sessions" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#64748B;strokeWidth=2;endArrow=block;endFill=1;" value="создать / завершить"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe4" edge="1" parent="1" source="sessions" target="queue" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#F59E0B;strokeWidth=2;endArrow=block;endFill=1;" value="finish"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe5" edge="1" parent="1" source="queue" target="aiworker" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#F59E0B;strokeWidth=2;endArrow=block;endFill=1;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe6" edge="1" parent="1" source="events" target="aiworker" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#F59E0B;strokeWidth=2;endArrow=block;endFill=1;dashed=1;" value="контекст сессии"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe7" edge="1" parent="1" source="aiworker" target="reports" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;" value="итог"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe8" edge="1" parent="1" source="aiworker" target="character" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;" value="награды"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe9" edge="1" parent="1" source="reports" target="screen" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;" value="GET /report"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="pe10" edge="1" parent="1" source="character" target="screen" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#6366F1;strokeWidth=2;endArrow=block;endFill=1;" value="GET /character"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="warning" value="&lt;b&gt;Почему график не обновляется сам:&lt;/b&gt; Analytics загружается один раз при открытии. Пока worker не сохранил report — статус processing; после сохранения UI не делает poll/reload автоматически." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=15;align=center;" vertex="1" parent="1"><mxGeometry x="100" y="710" width="930" height="62" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

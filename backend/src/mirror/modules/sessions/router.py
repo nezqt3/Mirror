@@ -6,8 +6,17 @@ from sqlalchemy import select
 
 from mirror.api.dependencies import CurrentUser, DbSession
 from mirror.core.errors import AnalysisErrorCode, ApiError, SessionErrorCode
+from mirror.modules.reports.model import SessionReport
 from mirror.modules.sessions.model import FocusSession, SessionStatus
-from mirror.modules.sessions.schema import SessionCreate, SessionFinish, SessionRead
+from mirror.modules.sessions.schema import (
+    CompletedReportSummary,
+    FailedReportSummary,
+    ProcessingReportSummary,
+    SessionCreate,
+    SessionFinish,
+    SessionHistoryItem,
+    SessionRead,
+)
 from mirror.modules.sessions.service import get_owned_session
 from mirror.services.active_sessions import (
     clear_active_session_id,
@@ -63,6 +72,26 @@ async def list_sessions(
         .offset(offset)
     )
     return list(result)
+
+
+@router.get("/history", response_model=list[SessionHistoryItem])
+async def list_session_history(
+    db: DbSession,
+    current_user: CurrentUser,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> list[SessionHistoryItem]:
+    rows = (
+        await db.execute(
+            select(FocusSession, SessionReport)
+            .outerjoin(SessionReport, SessionReport.session_id == FocusSession.id)
+            .where(FocusSession.user_id == current_user.id)
+            .order_by(FocusSession.started_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+    ).all()
+    return [_history_item(session, report) for session, report in rows]
 
 
 @router.get("/current", response_model=SessionRead)
@@ -168,3 +197,36 @@ async def _enqueue_analysis(item: FocusSession, db: DbSession) -> None:
             status.HTTP_503_SERVICE_UNAVAILABLE,
             AnalysisErrorCode.ANALYSIS_QUEUE_UNAVAILABLE,
         ) from exc
+
+
+def _history_item(
+    session: FocusSession,
+    report: SessionReport | None,
+) -> SessionHistoryItem:
+    summary: CompletedReportSummary | ProcessingReportSummary | FailedReportSummary | None
+    if report is not None:
+        summary = CompletedReportSummary(
+            goal_completion=report.goal_completion,
+            focus_score=report.focus_score,
+            deep_work_minutes=report.deep_work_minutes,
+            context_switches=report.context_switches,
+        )
+    elif session.status == SessionStatus.FAILED:
+        error_code = next(
+            (
+                candidate
+                for candidate in AnalysisErrorCode
+                if candidate.value == session.analysis_error_code
+            ),
+            AnalysisErrorCode.ANALYSIS_FAILED,
+        )
+        summary = FailedReportSummary(error_code=error_code)
+    elif session.status == SessionStatus.ACTIVE:
+        summary = None
+    else:
+        summary = ProcessingReportSummary()
+
+    return SessionHistoryItem(
+        **SessionRead.model_validate(session).model_dump(),
+        report_summary=summary,
+    )

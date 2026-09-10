@@ -19,7 +19,7 @@
 .weekly-chart { display: grid; height: 180px; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 24px; }
 .weekly-bar { display: grid; grid-template-rows: 18px 1fr 18px; gap: 5px; text-align: center; }
 .weekly-bar > div { position: relative; display: flex; align-items: flex-end; overflow: hidden; border-radius: 8px; background: rgba(255,255,255,.025); }
-.weekly-bar i { display: block; width: 100%; border-radius: 8px 8px 3px 3px; background: linear-gradient(180deg, #9d86fa, #5b43c6); box-shadow: 0 -6px 18px rgba(143,120,245,.2); }
+.weekly-bar i { display: block; width: 100%; border-radius: 8px 8px 3px 3px; background: linear-gradient(180deg, #9d86fa, #5b43c6); box-shadow: 0 -6px 18px rgba(143,120,245,.2); transition: height var(--ui-duration-normal) ease; }
 .weekly-bar > span { color: var(--ui-color-text-faint); font-size: var(--ui-font-size-2xs); }
 .weekly-bar__value { opacity: 0; transition: opacity var(--ui-duration-normal); }
 .weekly-bar:hover .weekly-bar__value { opacity: 1; }
